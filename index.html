@@ -1,5 +1,477 @@
 <!DOCTYPE html>
-<html>
-<head><title>Dashboard</title></head>
-<body><h1>eidai-dashboard</h1><p>File successfully uploaded.</p></body>
-</html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>æ°¸ä»£éè¼¸ååº« çµå¶ããã·ã¥ãã¼ããå½æã</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', 'Hiragino Sans', sans-serif; background: #f0f2f5; color: #333; }
+.header { background: linear-gradient(135deg, #1a365d 0%, #2d5aa0 100%); color: white; padding: 20px 30px; }
+.header h1 { font-size: 22px; margin-bottom: 4px; }
+.header p { font-size: 13px; opacity: 0.8; }
+.kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; padding: 20px 30px; }
+.kpi { background: white; border-radius: 10px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.kpi .label { font-size: 12px; color: #666; margin-bottom: 6px; }
+.kpi .value { font-size: 24px; font-weight: bold; color: #1a365d; }
+.kpi .sub { font-size: 11px; color: #888; margin-top: 4px; }
+.tabs { display: flex; background: white; border-bottom: 2px solid #e0e0e0; padding: 0 30px; }
+.tab { padding: 12px 24px; cursor: pointer; font-size: 14px; border-bottom: 3px solid transparent; color: #666; }
+.tab.active { color: #1a365d; border-bottom-color: #2d5aa0; font-weight: bold; }
+.tab:hover { background: #f5f5f5; }
+.content { padding: 20px 30px; display: none; }
+.content.active { display: block; }
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.chart-box { background: white; border-radius: 10px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.chart-box.full { grid-column: 1 / -1; }
+.chart-box h3 { font-size: 15px; color: #1a365d; margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { background: #1a365d; color: white; padding: 8px 10px; text-align: center; }
+td { padding: 7px 10px; border-bottom: 1px solid #eee; text-align: right; }
+td:first-child, td:nth-child(2) { text-align: left; }
+tr:hover { background: #f8f9fa; }
+.jisha { background: #e2efda; }
+.riyo { background: #fce4d6; }
+.total-row { background: #ddebf7; font-weight: bold; }
+.prev { color: #888; }
+@media (max-width: 1200px) { .kpi-row { grid-template-columns: repeat(3, 1fr); } .chart-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .kpi-row { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<div class="header">
+<h1>æ ªå¼ä¼ç¤¾ æ°¸ä»£éè¼¸ååº«ãçµå¶ããã·ã¥ãã¼ããå½æã</h1>
+<p>å¯¾è±¡æé: 2025å¹´7æã2026å¹´3æï¼9ã¶æå®ç¸¾ï¼ â»3æã¯éä¸­éè¨</p>
+</div>
+<div class="kpi-row"><div class="kpi"><div class="label">9ã¶æåè¨å£²ä¸</div><div class="value">3.7å</div><div class="sub">åæéææ¯ 69.4%</div></div><div class="kpi"><div class="label">èªç¤¾ééå£²ä¸</div><div class="value">1.7å</div><div class="sub">æ§ææ¯ 47.3%</div></div><div class="kpi"><div class="label">å©ç¨è²¨ç©å£²ä¸</div><div class="value">1.9å</div><div class="sub">æ§ææ¯ 52.7%</div></div><div class="kpi"><div class="label">ç²å©ï¼å£²ä¸-å­è»è²»ï¼</div><div class="value">2.1å</div><div class="sub">ç²å©ç 57.8%</div></div><div class="kpi"><div class="label">å¯¾åæåææ¯</div><div class="value">92.2%</div><div class="sub">åæå9ã¶æ: 4.0å</div></div></div>
+<div class="tabs">
+<div class="tab active" onclick="showTab(0)">æå¥æ¨ç§»</div>
+<div class="tab" onclick="showTab(1)">èªç¤¾è»ä¸¡åæ</div>
+<div class="tab" onclick="showTab(2)">è»ç¨®å¥åæ</div>
+<div class="tab" onclick="showTab(3)">å©ç¨è²¨ç©ã»é¡§å®¢å¥</div>
+<div class="tab" onclick="showTab(4)">å­è»ã³ã¹ã</div>
+</div>
+<div class="content active" id="tab0"><div class="chart-grid"><div class="chart-box"><h3>å½ææå¥å£²ä¸ï¼èªç¤¾ vs å©ç¨è²¨ç©ï¼</h3><canvas id="chart_monthly"></canvas></div><div class="chart-box"><h3>åæåææ¯è¼ï¼åè¨å£²ä¸ï¼</h3><canvas id="chart_yoy"></canvas></div><div class="chart-box full"><h3>æå¥æ¨ç§»è¡¨</h3><table><tr><th>æ</th><th>èªç¤¾å£²ä¸</th><th>å©ç¨è²¨ç©</th><th>åè¨å£²ä¸</th><th>å­è»è²»</th><th>ç²å©</th><th>ç²å©ç</th><th class="prev">åæåæ</th><th class="prev">å¯¾åææ¯</th></tr><tr><td>7æ</td><td class="jisha">20,367,320</td><td class="riyo">26,061,700</td><td>46,429,020</td><td>21,037,500</td><td>25,391,520</td><td>54.7%</td><td class="prev">43,772,877</td><td class="prev">106.1%</td></tr><tr><td>8æ</td><td class="jisha">17,638,532</td><td class="riyo">21,102,853</td><td>38,741,385</td><td>16,892,459</td><td>21,848,926</td><td>56.4%</td><td class="prev">38,779,194</td><td class="prev">99.9%</td></tr><tr><td>9æ</td><td class="jisha">20,164,065</td><td class="riyo">24,698,260</td><td>44,862,325</td><td>20,051,000</td><td>24,811,325</td><td>55.3%</td><td class="prev">43,721,764</td><td class="prev">102.6%</td></tr><tr><td>10æ</td><td class="jisha">21,216,667</td><td class="riyo">24,333,000</td><td>45,549,667</td><td>19,014,700</td><td>26,534,967</td><td>58.3%</td><td class="prev">49,193,782</td><td class="prev">92.6%</td></tr><tr><td>11æ</td><td class="jisha">19,637,240</td><td class="riyo">21,739,896</td><td>41,377,136</td><td>16,890,942</td><td>24,486,194</td><td>59.2%</td><td class="prev">46,756,903</td><td class="prev">88.5%</td></tr><tr><td>12æ</td><td class="jisha">21,385,210</td><td class="riyo">20,231,276</td><td>41,616,486</td><td>15,553,234</td><td>26,063,252</td><td>62.6%</td><td class="prev">45,781,667</td><td class="prev">90.9%</td></tr><tr><td>1æ</td><td class="jisha">18,639,692</td><td class="riyo">20,685,828</td><td>39,325,088</td><td>16,976,492</td><td>22,348,596</td><td>56.8%</td><td class="prev">42,684,655</td><td class="prev">92.1%</td></tr><tr><td>2æ</td><td class="jisha">19,187,795</td><td class="riyo">21,659,790</td><td>40,847,585</td><td>17,804,000</td><td>23,043,585</td><td>56.4%</td><td class="prev">42,074,705</td><td class="prev">97.1%</td></tr><tr><td>3æ</td><td class="jisha">15,177,084</td><td class="riyo">12,419,159</td><td>27,596,243</td><td>10,353,400</td><td>17,242,843</td><td>62.5%</td><td class="prev">44,510,862</td><td class="prev">62.0%</td></tr><tr class="total-row"><td>9ã¶æè¨</td><td>173,413,173</td><td>192,931,762</td><td>366,344,935</td><td>154,573,727</td><td>211,771,208</td><td>57.8%</td><td class="prev">397,276,409</td><td class="prev">92.2%</td></tr></table></div></div></div><div class="content" id="tab1"><div class="chart-grid"><div class="chart-box full"><h3>è»ä¸¡å¥æå¥å£²ä¸æ¨ç§»ï¼ä¸ä½10å°ï¼</h3><canvas id="chart_vehicles"></canvas></div><div class="chart-box full"><h3>èªç¤¾è»ä¸¡å¥å£²ä¸ä¸è¦§</h3><table><tr><th>è»ä¸¡å</th><th>è»ç¨®</th><th>7æ</th><th>8æ</th><th>9æ</th><th>10æ</th><th>11æ</th><th>12æ</th><th>1æ</th><th>2æ</th><th>3æ</th><th>9ã¶æè¨</th><th class="prev">åæå¹´é</th></tr><tr><td>äº¬é½ã130ããã729</td><td>13tW</td><td>1,065,700</td><td>1,036,950</td><td>1,057,500</td><td>1,076,450</td><td>1,086,450</td><td>1,303,250</td><td>0,391,300</td><td>1,090,950</td><td>0,017,203</td><td style="font-weight:bold">13,138,753</td><td class="prev">18,920,250</td></tr><tr><td>äº¬é½131ãã358</td><td>13tW</td><td>1,479,100</td><td>1,604,472</td><td>1,487,700</td><td>1,436,200</td><td>1,365,500</td><td>1,520,175</td><td>1,267,150</td><td>1,411,500</td><td>1,167,754</td><td style="font-weight:bold">12,739,551</td><td class="prev">15,007,210</td></tr><tr><td>äº¬é½130ãã2955</td><td>13tW</td><td>1,491,000</td><td>1,136,000</td><td>1,420,000</td><td>1,562,000</td><td>1,278,000</td><td>1,349,000</td><td>1,349,000</td><td>1,260,000</td><td>1,120,000</td><td style="font-weight:bold">11,965,000</td><td class="prev">14,569,600</td></tr><tr><td>äº¬é½108ãã888</td><td>13tW</td><td>1,406,450</td><td>1,014,300</td><td>1,248,550</td><td>1,535,677</td><td>1,232,800</td><td>1,347,800</td><td>1,173,800</td><td>1,050,250</td><td>1,050,162</td><td style="font-weight:bold">11,059,789</td><td class="prev">13,467,500</td></tr><tr><td>äº¬é½113ãã777</td><td>13tW</td><td>1,170,350</td><td>1,008,400</td><td>1,178,700</td><td>1,259,850</td><td>1,094,300</td><td>1,211,050</td><td>1,291,600</td><td>1,003,600</td><td>1,004,680</td><td style="font-weight:bold">10,222,530</td><td class="prev">13,467,783</td></tr><tr><td>äº¬é½130ããã297</td><td>4tW</td><td>1,260,000</td><td>960,000</td><td>1,200,000</td><td>1,200,000</td><td>1,140,000</td><td>1,200,000</td><td>1,080,000</td><td>1,080,000</td><td>1,020,000</td><td style="font-weight:bold">10,140,000</td><td class="prev">1,740,000</td></tr><tr><td>äº¬é½130ãã629</td><td>13tW</td><td>995,050</td><td>677,090</td><td>834,550</td><td>1,422,500</td><td>1,304,950</td><td>1,127,910</td><td>1,086,830</td><td>972,900</td><td>1,025,354</td><td style="font-weight:bold">9,847,134</td><td class="prev">14,447,887</td></tr><tr><td>äº¬é½130ãã929</td><td>13tW</td><td>1,137,400</td><td>852,200</td><td>1,085,700</td><td>1,137,400</td><td>930,600</td><td>1,034,000</td><td>982,300</td><td>878,900</td><td>878,900</td><td style="font-weight:bold">8,917,400</td><td class="prev">11,150,600</td></tr><tr><td>äº¬é½130ãã2627</td><td>12tå¹³</td><td>1,281,820</td><td>706,720</td><td>1,039,180</td><td>1,313,040</td><td>1,158,740</td><td>1,084,900</td><td>844,980</td><td>1,040,120</td><td>239,022</td><td style="font-weight:bold">8,908,522</td><td class="prev">13,335,260</td></tr><tr><td>äº¬é½130ãã1729</td><td>4tWPG</td><td>980,000</td><td>910,000</td><td>938,000</td><td>945,000</td><td>880,000</td><td>940,000</td><td>905,000</td><td>858,300</td><td>854,001</td><td style="font-weight:bold">8,210,301</td><td class="prev">10,436,000</td></tr><tr><td>æ»è³130ãã129</td><td>13tW</td><td>0</td><td>448,000</td><td>1,048,000</td><td>1,147,000</td><td>982,000</td><td>1,224,000</td><td>1,230,000</td><td>1,019,000</td><td>962,000</td><td style="font-weight:bold">8,060,000</td><td class="prev">0</td></tr><tr><td>äº¬é½130ãã2944</td><td>13tW</td><td>246,400</td><td>0</td><td>403,800</td><td>318,500</td><td>1,374,750</td><td>1,580,575</td><td>1,118,400</td><td>1,088,075</td><td>456,301</td><td style="font-weight:bold">6,586,801</td><td class="prev">4,504,050</td></tr><tr><td>äº¬é½131ãã2951</td><td>13tW</td><td>1,515,150</td><td>1,214,450</td><td>1,596,135</td><td>1,562,700</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="font-weight:bold">5,888,435</td><td class="prev">17,680,540</td></tr><tr><td>äº¬é½130ããã1</td><td>4tW</td><td>700,000</td><td>700,000</td><td>700,000</td><td>700,000</td><td>700,000</td><td>700,000</td><td>700,000</td><td>700,000</td><td>0</td><td style="font-weight:bold">5,600,000</td><td class="prev">8,250,000</td></tr><tr><td>äº¬é½130ãã829</td><td>13tW</td><td>789,300</td><td>643,000</td><td>751,800</td><td>392,550</td><td>403,350</td><td>730,750</td><td>422,300</td><td>666,650</td><td>643,000</td><td style="font-weight:bold">5,442,700</td><td class="prev">10,004,450</td></tr><tr><td>äº¬é½138ãã9</td><td>ä¸æ</td><td>620,800</td><td>721,900</td><td>576,450</td><td>486,300</td><td>734,800</td><td>457,800</td><td>520,600</td><td>548,600</td><td>599,903</td><td style="font-weight:bold">5,267,153</td><td class="prev">5,530,904</td></tr><tr><td>æ»è³100ãã2758</td><td>13tW</td><td>543,000</td><td>290,000</td><td>33,500</td><td>504,000</td><td>403,000</td><td>181,000</td><td>648,000</td><td>1,120,000</td><td>1,112,000</td><td style="font-weight:bold">4,834,500</td><td class="prev">0</td></tr><tr><td>äº¬é½101ãã1128</td><td>2tç®±</td><td>600,000</td><td>600,000</td><td>600,000</td><td>600,000</td><td>600,000</td><td>600,000</td><td>600,000</td><td>600,000</td><td>0</td><td style="font-weight:bold">4,800,000</td><td class="prev">7,050,000</td></tr><tr><td>äº¬é½130ãã1429</td><td>2tå¹³</td><td>606,000</td><td>606,000</td><td>591,000</td><td>561,000</td><td>606,000</td><td>606,000</td><td>606,000</td><td>606,000</td><td>0</td><td style="font-weight:bold">4,788,000</td><td class="prev">6,940,891</td></tr><tr><td>æ»è³100ãã4640</td><td>ä¸æ</td><td>0</td><td>25,000</td><td>737,500</td><td>829,500</td><td>634,000</td><td>750,000</td><td>686,000</td><td>359,500</td><td>625,500</td><td style="font-weight:bold">4,647,000</td><td class="prev">0</td></tr><tr><td>äº¬é½131ãã29</td><td>2tå¹³</td><td>606,000</td><td>606,000</td><td>606,000</td><td>606,000</td><td>606,000</td><td>-45,000</td><td>606,000</td><td>606,000</td><td>0</td><td style="font-weight:bold">4,197,0<td>0</td><td>0</td><td style="font-weight:bold">606,000</td><td class="prev">0</td></tr><tr><td>æ»è³100ãã2765</td><td>13tW</td><td>0</td><td>468,050</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="font-weight:bold">468,050</td><td class="prev">0</td></tr><tr><td>äº¬é½130ãã296</td><td>13tW</td><td>379,000</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="font-weight:bold">379,000</td><td class="prev">10,701,450</td></tr><tr><td>äº¬é½101ãã382</td><td>4tW</td><td>321,000</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="font-weight:bold">321,000</td><td class="prev">6,552,969</td></tr><tr><td>äº¬é½100ãã3610</td><td>13tW</td><td>66,800</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="font-weight:bold">66,800</td><td class="prev">7,566,910</td></tr><tr><td>äº¬é½130ãã298</td><td>4tW</td><td>22,000</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td style="font-weight:bold">22,000</td><td class="prev">10,437,700</td></tr></table></div></div></div><div class="content" id="tab2"><div class="chart-grid"><div class="chart-box"><h3>è»ç¨®å¥9ã¶æå£²ä¸</h3><canvas id="chart_types"></canvas></div><div class="chart-box"><h3>è»ç¨®å¥æ¯è¼ï¼å½æ vs åæå¹´éï¼</h3><canvas id="chart_types_cmp"></canvas></div></div></div><div class="content" id="tab3"><div class="chart-grid"><div class="chart-box full"><h3>å©ç¨è²¨ç© é¡§å®¢å¥å£²ä¸ï¼ä¸ä½15ç¤¾ï¼</h3><canvas id="chart_customers"></canvas></div><div class="chart-box full"><h3>å©ç¨è²¨ç© é¡§å®¢å¥å£²ä¸ã»æ¨å®ç²å©ä¸è¦§</h3><table><tr><th>CD</th><th>å¾æåå</th><th>èªç¤¾å£²ä¸</th><th>å©ç¨å£²ä¸</th><th>åè¨</th><th>æ§ææ¯</th><th>å­è»æå</th><th>æ¨å®ç²å©</th><th>ç²å©ç</th><th class="prev">åæå©ç¨</th></tr><tr><td>0603</td><td>éªç¥ã»ã³ã³ã¼è¥¿èï¼æ°·ä¸ï¼</td><td class="jisha">0</td><td class="riyo">16,580,133</td><td>16,580,133</td><td>8.6%</td><td>13,283,727</td><td>3,296,406</td><td>19.9%</td><td class="prev">26,121,505</td></tr><tr><td>0418</td><td>ã¸ã£ãã³ãã©ãã£ãã¯</td><td class="jisha">155,000</td><td class="riyo">15,847,000</td><td>16,002,000</td><td>8.2%</td><td>12,696,354</td><td>3,150,646</td><td>19.9%</td><td class="prev">28,568,000</td></tr><tr><td>0425</td><td>ä¼è¦éé</td><td class="jisha">1,521,000</td><td class="riyo">14,025,500</td><td>15,546,500</td><td>7.3%</td><td>11,236,998</td><td>2,788,502</td><td>19.9%</td><td class="prev">6,521,000</td></tr><tr><td>0168</td><td>ä¸åæ®µãã¼ã«</td><td class="jisha">0</td><td class="riyo">13,377,000</td><td>13,377,000</td><td>6.9%</td><td>10,717,430</td><td>2,659,570</td><td>19.9%</td><td class="prev">20,153,984</td></tr><tr><td>0454</td><td>åä¿¡éè¼¸</td><td class="jisha">240,000</td><td class="riyo">12,447,000</td><td>12,687,000</td><td>6.5%</td><td>9,972,330</td><td>2,474,670</td><td>19.9%</td><td class="prev">2,415,000</td></tr><tr><td>0053</td><td>ï½¼ï¾ï½ªï½°ï¾ï¾ï¾ï½¯ï½¸ï½½</td><td class="jisha">0</td><td class="riyo">11,830,950</td><td>11,830,950</td><td>6.1%</td><td>9,478,761</td><td>2,352,189</td><td>19.9%</td><td class="prev">16,694,000</td></tr><tr><td>0604</td><td>éªç¥ã»ã³ã³ã¼è¥¿èï¼æ¬ç¤¾ï¼ä¸è¬</td><td class="jisha">23,549,000</td><td class="riyo">9,401,000</td><td>32,950,000</td><td>4.9%</td><td>7,531,925</td><td>1,869,075</td><td>19.9%</td><td class="prev">10,106,000</td></tr><tr><td>0416</td><td>ã¢¤ãº</td><td class="jisha">209,000</td><td class="riyo">7,955,000</td><td>8,164,000</td><td>4.1%</td><td>6,373,414</td><td>1,158586</td><td>19.9%</td><td class="prev">21,047,000</td></tr><tr><td>0453</td><td>MP</td><td class="jisha">70,000</td><td class="riyo">7,6379,000</td><td>7,449,000</td><td>3.8%</td><td>5,911,932</td><td>1,467,068</td><td>19.9%</td><td class="prev">1,400,000</td></tr><tr><td>0173</td><td>å¤§æ¥åæ¥­</td><td class="jisha">423,000</td><td class="riyo">6,666,540</td><td>7,089,540</td><td>3.5%</td><td>5,341,121</td><td>1,325,419</td><td>19.9%</td><td class="prev">11,384,000</td></tr><tr><td>0522</td><td>æ¥æ ï¼865å®éã¨ã­ã¹ãã¬ã¹ï¼</td><td class="jisha">0</td><td class="riyo">5,940,000</td><td>5,940,000</td><td>3.1%</td><td>4,759,029</td><td>1,180,971</td><td>19.9%</td><td class="prev">7,920,000</td></tr><tr><td>0064</td><td>ã»ã³ã³ã¼ãæ æ±å¶æ¥­æ</td><td class="jisha">5,(ÄØÐ°ÄäÌð½ÑøñÑ±ÍÌôÉ¥å¼øÔ°àØà°äØÜð½ÑøñÑøÄÄ°ÜÐÀ°ÐàØð½ÑøñÑøÌ¸Àð½ÑøñÑøÐ°ÜÀÈ°ÄÄäð½ÑøñÑøÄ°ÄØØ°àÐàð½ÑøñÑøÄä¸äð½ÑøñÑ±ÍÌôÁÉØøÜ°äÈØ°ÜÈÀð½Ñøð½ÑÈøñÑÈøñÑøÀÐÔØð½ÑøñÑûâ'J3Ògf£ÂÆxð½ÑøñÑ±ÍÌô©¥Í¡øÀð½ÑøñÑ±ÍÌôÉ¥å¼øÔ°ÔØØ°ÐÔäð½ÑøñÑøÔ°ÔØØ°ÐÔäð½ÑøñÑøÈ¸äð½ÑøñÑøÐ°ÐÔä°ÜÔÔð½ÑøñÑøÄ°ÄÀØ°ÜÀÐð½ÑøñÑøÄä¸äð½ÑøñÑ±ÍÌôÁÉØøÄ°ÔÀÀ°ÀÀÀð½Ñøð½ÑÈøñÑÈøñÑøÀÔÈÀð½ÑøñÑû^¾ò ÔÐàÖZè~xî8*8*Þ8+89~8:Î8+ûÈÂ÷FCãÇFB6Æ73Ò&¦6#ãÂ÷FCãÇFB6Æ73Ò'&ò#ãRÃ#ÃÂ÷FCãÇFCãRÃ#ÃÂ÷FCãÇFCã"ãrSÂ÷FCãÇFCãBÃ#3Ã#CÂ÷FCãÇFCãÃCÃsS#Â÷FCãÇFCããSÂ÷FCãÇFB6Æ73Ò'&Wb#ãrÃ#ÃÂ÷FCãÂ÷G#ãÇG#ãÇFCãSÂ÷FCãÇFCîiz^jNûÈtÔ´D)ûÈÂ÷FCãÇFB6Æ73Ò&¦6#ãÂ÷FCãÇFB6Æ73Ò'&ò#ãRÃRÃ#CÂ÷FCãÇFCãRÃRÃ#CÂ÷FCãÇFCã"ãbSÂ÷FCãÇFCãBÃ"Ã##Â÷FCãÇFCãÃ2³#Â÷FCãÇFCããSÂ÷FCãÇFB6Æ73Ò'&Wb#ãrÃssÃÂ÷FCãÂ÷G#ãÇG#ãÇFCãS3Â÷FCãÇFCîiz^jNûÈtÔ´D)ûÈÂ÷FCãÇFB6Æ73Ò&¦6#ãÂ÷FCãÇFB6Æ73Ò'&ò#ãRÃcÃÂ÷FCãÇFCãRÃcÃÂ÷FCãÇFCã"ãbSÂ÷FCãÇFCãBÃS2ÃÂ÷FCãÇFCãÃbÃ#Â÷FCãÇFCããSÂ÷FCãÇFB6Æ73Ò'&Wb#ãbÃSCRÃÂ÷FCãÂ÷G#ãÇG#ãÇFCãS#3Â÷FCãÇFCîiz^jNûÈSSS^[iÊÎj+XÈ^¾ËûÈÂ÷FCãÇFB6Æ73Ò&¦6#ãÂ÷FCãÇFB6Æ73Ò'&ò#ãBÃÃÂ÷FCãÇFCãBÃÃÂ÷FCãÇFCã"ãRSÂ÷FCãÇFCã2ÃÃssSÂ÷FCãÇFCãsÃ##SÂ÷FCãÇFCããSÂ÷FCãÇFB6Æ73Ò'&Wb#ãSÃSC3Â÷FCãÂ÷G#ãÇG#ãÇFCãSCÂ÷FCãÇFCîiz^jNûÈ>[iÊÎj+XÈ^¾ËûÈÂ÷FCãÇFB6Æ73Ò&¦6#ãÂ÷FCãÇFB6Æ73Ò'&ò#ãBÃcS"Ãs#Â÷FCãÇFCãBÃcS"Ãs#Â÷FCãÇFCã"ãBSÂ÷FCãÇFCã2Ãs#rÃCÂ÷FCãÇFCã#RÃcÂ÷FCãÇFCããSÂ÷FCãÇFB6Æ73Ò'&Wb#ãÃ#ÃÂ÷FCãÂ÷G#ãÇG#ãÇFCã##Â÷FCãÇFCîXÙ~ZJ~®8+¾8;>8+>8;Î¾Ëi[NX)Â÷FCãÇFB6Æ73Ò&¦6#ãRÃccBÃÂ÷FCãÇFB6Æ73Ò'&ò#ã2ÃcsÃÂ÷FCãÇFCãÃ3C2ÃÂ÷FCãÇFCããSÂ÷FCãÇFCã"Ã#CrÃSSCÂ÷FCãÇFCãs3ÃCCcÂ÷FCãÇFCããSÂ÷FCãÇFB6Æ73Ò'&Wb#ãc#ÃÂ÷FCãÂ÷G#ãÇG#ãÇFCãcÂ÷FCãÇFCî888:¾89^8*>8;>ûÈIÎûï"OÝÛ\ÜÏH\ÚHÝÛ\ÜÏH^[ÈËLÍÝËLÍÝKOÝLL
+LLOÝË
+OÝNKIOÝÛ\ÜÏH]Ë
+ÝÝ
+ÌÝ¹¥¬9å'ùâjy­`OÝÛ\ÜÏH\ÚHNÝÛ\ÜÏH^[ÈMMËÝKNKÝKIOÝÍKNOÝN
+ËLOÝNKIOÝÛ\ÜÏH]KÝÝÝÛ\ÜÏH^[ÈÌÌÝÌÌÝOÝKNLÏÝ
+ÏÝNKIOÝÛ\ÜÏH]ÌLÝÝMÌOÝ¹.â¹­)z`bú/.ÝÛ\ÜÏH\ÚHLÌÝÛ\ÜÏH^[ÈÌÝ
+NÝOÝKN
+ÝMÝNKIOÝÛ\ÜÏH]LÝÝ
+NOÝ¹ª*¹llz`bú` OÝÛ\ÜÏH\ÚHÝÛ\ÜÏH^[ÈÝÝIOÝNL
+Ý
+Ë
+ÌMÝNKIOÝÛ\ÜÏH]
+MÝÝLÏÝ¸àð¸à«8à­Ìyh.ÝÛ\ÜÏH\ÚHÌËÝÛ\ÜÏH^[ÈNNKÝLÝIOÝMNK
+ÍOÝÎK
+MOÝNKIOÝÛ\ÜÏH]ÝÝ
+
+OÝ¸àª¸à¬8àêxàª8àìøà¯øàï8àåøàêxà©8à®ÝÛ\ÜÏH\ÚHMÝÛ\ÜÏH^[ÈNLÝ
+ÝIOÝMLOÝÍË
+ÍÍOÝNKIOÝÛ\ÜÏH]ÝÝ
+Ý¸àâxàêøàåxà¨øàìûï"9l#ù`"z`bú/.;ï"OÝÛ\ÜÏH\ÚHÝÛ\ÜÏH^[ÈNÝNÝIOÝML
+ÝÍËÍÎÝNKIOÝÛ\ÜÏH]ÍKÝÝÝXOÙ]Ù]Ù]ØÜ\ÛÛÝHÈ[ÛÈÈ×MÌMÌWMÌLMÌLWMÌLMÌWMÌMÌ×MÌKÞWÚ\ÚHÌÍÌÌMÍÎ
+LÌM
+KLMËNMÍÌLÎ
+LLN
+ÎLNLN
+ÍÎMKMLMÍÌ
+KÞWÜ^[ÈÌ
+MÌLL
+LË
+NÌÌÌMÌÎNMÌLÍ
+
+NMNMÎLLNLMNWKÞWÝÝ[Í
+LÎ
+ÍLÎ
+K
+
+
+ÌK
+
+MMMË
+LÍÍÌLÍ
+MM
+ÎLÌL
+
+
+ÍN
+KÍNM×KWÚ\ÚHÌM
+ÍËÎLÎKMÍ
+
+ÌNM
+ÌÍNLËL
+MKNLÍ
+MKN
+ÌÍNL
+KNMÍLÌÍWKWÜ^[ÈÌNM
+ÎMÎMMLMKNMLÌLNLLÌÌL
+MLÍÌÌÌMNÌÌÎÍML×KWÝÝ[ÍÍÍÌ
+ÍËÎ
+ÍÎLNM
+ÍÌMÍ
+LNLÍÎ
+
+ÍMLË
+
+MÎMË
+
+
+MK
+
+Í
+Ì
+K
+
+
+LL
+KÞWÝHÌLÍÍLML
+NK
+LLNLM
+ÌMLMMMMLÌÍMMÍLMÎ
+LÍLÍKÞWÙÜÜÜÈÌLÎLLMLN
+LLLÌKLÍMË
+
+NM
+ÌLÍ
+NMÌ
+ÍN
+KMÌ
+×KWÝHÌM
+LÎLÍÍMËMÌÌÍÌKM
+
+M
+NMMNM
+ÍKNLÍL
+K
+NMMÍ×_NÂÛÛÝÈHÈX[ÈÈ×MÌMÌWMÌLMÌLWMÌLMÌWMÌMÌ×MÌK]\Ù]ÈÞÈX[MXX×NLLÌLÌLÌLÌ
+
+LÌ
+ÌH]HÌMÍMÌMÍMLMMÌ
+LM
+Í
+LMN
+
+LNÌLLÎLLÌLLMLLMÌ×_KÈX[MXX×NLLÌWLÌLLÌÍN]HÌM
+ÎLLM
+
+
+ÌM
+ÍÌMÍLÍMLMLMÍKLÌMLMLMLLMÍÍM_KÈX[MXX×NLLÌLÌ
+
+LÌMMH]HÌMLLLLÍMMMLÎLÍLLÍLLLL_KÈX[MXX×NLLLÌ
+LWLÌ]HÌM
+
+
+LLMÌL
+MLMLÍMÍËLÌLÍ
+ÎLMÌÎL
+LLL
+LM_KÈX[MXX×NLLL×LÌ
+
+LÌ
+ÍÍÈ]HÌLMÌÍLL
+LMÎ
+ÌLNN
+LLMÌLLL
+LLLMLÍL
+
+_KÈX[MXX×NLLÌLÌLÌ
+LÌMÈ]HÌLMLLLMLLLL_KÈX[MXX×NLLÌLÌ
+
+LÌ
+H]HÎNML
+L
+ÍÌLÍ
+MLMLLÌ
+MLMLÎLLL
+ÌMÌLLLÍM_KÈX[MXX×NLLÌLÌ
+LÌLH]HÌLLÍÍ
+LL
+MÌLLÍÍLÌ
+LÍNÌ
+ÎL
+ÎL_KÈX[MXX×NLLÌLÌ
+LÌÈ]HÌLN
+Ì
+ÌLÎLNLÌLÌ
+LMN
+ÍL
+L
+
+NL
+LÎL_KÈX[MXX×NLLÌLÌ
+LÌMÌH]HÎNLLLÎM
+LML
+L
+NÌ
+MW_W_NÂÛÛÝHÈLÝÈÈMLMHMYMÌÈLMYMÌÈÔÈMØHNÂÛÛÝHÌLL
+ÌÌNMËMÍMÌNLMMLËMNLLL
+LLÌK
+NÂÛÛÝHÌMLJÌÍMÍÍK
+ÍÌLÎKLÌÎLNLKLÌÌÍLL
+Í
+Ì
+LNÂÛÛÝÓHÈNMWMÎMYWLÌLÌ×LÌ×LÌ×NMÙNL
+×YMÌÍ×MLWYHLÌLÌL×LÌWLÌ×LÌÎLÌNWLÌ
+WLÌL×LÌÌ×LÌYMNNNL
+NLHMLWMLÍMMWLÌ×LÌ×LÌXMLÌM×MLWNL
+NÎYØ×YYWYWYÌY×YYYXWYYÎYÙNMWMÎMYWLÌLÌ×LÌ×LÌ×NMÙNL
+×YMÌ×MÎLÙWYHLÌLLÌMLÌHTMNL×MYMWMLWMMMYMWM
+Y
+WMX
+×NLXÙWLÌNLÌYLÌWLÌ
+ÈLÌLÌ×LÌ×LÌ×LÌMM×MÍÌWMMXMMMMLWMM×MÙNWMMLÌMXÌMXÍYHMYMWM
+Y
+M
+WMX
+×NLXÙWLÌNLÌYLÌHMYMWM
+YL
+ÓRRÐUNÂÛÛÝÕHÌMNLÌËMN
+
+ÌMMLLÌÍÍÌL
+
+ÌLNÌMLML
+ÎMML
+ÌÍÎL
+M
+NM
+N
+MË
+MM
+NK
+L
+LMLNÂÝ[ÛÚÝÕXHÂØÝ[Y[]Y\TÙ[XÝÜ[
+	ËÛÛ[	ÊKÜXXÚ
+[Ý[Û[
+HÈ[Û\ÜÓ\Ý[[ÝJ	ØXÝ]IÊNÈJNÂØÝ[Y[]Y\TÙ[XÝÜ[
+	ËXÊKÜXXÚ
+[Ý[Û[
+HÈ[Û\ÜÓ\Ý[[ÝJ	ØXÝ]IÊNÈJNÂØÝ[Y[Ù][[Y[RY
+	ÝXÈ
+ÈKÛ\ÜÓ\ÝY
+	ØXÝ]IÊNÂØÝ[Y[]Y\TÙ[XÝÜ[
+	ËXÊVÛKÛ\ÜÓ\ÝY
+	ØXÝ]IÊNÂBÛÛÝÛÛÜÌLHÉÈÌMÍPË	ÈÑQ
+ÑÌIË	ÈÌ
+L	Ë	ÈÑÌ	Ë	ÈÍÌÌL	Ë	ÈÑ
+
+
+	Ë	ÈÌ	Ë	ÈÎL
+L	Ë	ÈÑQ	Ë	ÈÎ
+LLÉ×NÂËÈ[ÛHÚ\]ÈÚ\
+ØÝ[Y[Ù][[Y[RY
+	ØÚ\Û[ÛIÊKÂ\N	Ø\Ë]NÂX[Î[ÛË]\Ù]ÎÂÈX[	ú!ê¹é/¹hì¹."Ë]NÞWÚ\ÚKXÚÙÜÝ[ÛÛÜ	ÈÌMÍPÈKÈX[	ùb*yå*:,ª9âjIË]NÞWÜ^[ËXÚÙÜÝ[ÛÛÜ	ÈÑQ
+ÑÌIÈBBKÜ[ÛÎÈ\ÜÛÚ]NYKØØ[\ÎÈNÈXÚÜÎÈØ[XÚÎ[Ý[ÛHÈ]\
+ÌL
+KÓØØ[TÝ[Ê
+H
+È	ù.!ÉÎÈHHHHBJNÂËÈ[ÖHÚ\]ÈÚ\
+ØÝ[Y[Ù][[Y[RY
+	ØÚ\Þ[ÞIÊKÂ\N	Ø\Ë]NÂX[Î[ÛË]\Ù]ÎÂÈX[	ùodù§'ùd":*"	Ë]NÞWÝÝ[XÚÙÜÝ[ÛÛÜ	ÈÌMÍPÈKÈX[	ùbcy§'ùd#9§"	Ë]NWÝÝ[XÚÙÜÝ[ÛÛÜ	ÈÐÈBBKÜ[ÛÎÈ\ÜÛÚ]NYKØØ[\ÎÈNÈXÚÜÎÈØ[XÚÎ[Ý[ÛHÈ]\
+ÌL
+KÓØØ[TÝ[Ê
+H
+È	ù.!ÉÎÈHHHHBJNÂËÈZXÛH[HÚ\\ÈHË]\Ù]ËX\
+[Ý[ÛËJHÂ]\ÈX[ËX[]NË]KÜ\ÛÛÜÛÛÜÌLÚWK[[ÙK[Ú[ÛÈNÂJNÂ]ÈÚ\
+ØÝ[Y[Ù][[Y[RY
+	ØÚ\ÝZXÛ\ÉÊKÂ\N	Û[IË]NÈX[ÎËX[Ë]\Ù]ÎÈKÜ[ÛÎÈ\ÜÛÚ]NYKØØ[\ÎÈNÈXÚÜÎÈØ[XÚÎ[Ý[ÛHÈ]\
+ÌL
+KÓØØ[TÝ[Ê
+H
+È	ù.!ÉÎÈHHHHBJNÂËÈ\H\]ÈÚ\
+ØÝ[Y[Ù][[Y[RY
+	ØÚ\Ý\\ÉÊKÂ\N	Ø\Ë]NÈX[Î]\Ù]ÎÞÈX[	øàìúb%¹-.	Ë]NXÚÙÜÝ[ÛÛÜ	ÈÌMÍPÈWHKÜ[ÛÎÈ\ÜÛÚ]NYK[^^\Î	ÞIËØØ[\ÎÈÈXÚÜÎÈØ[XÚÎ[Ý[ÛHÈ]\
+ÌL
+KÓØØ[TÝ[Ê
+H
+È	ù.!ÉÎÈHHHHBJNÂËÈ\HÛÛ\\\ÛÛ]ÈÚ\
+ØÝ[Y[Ù][[Y[RY
+	ØÚ\Ý\\×ØÛ\	ÊKÂ\N	Ø\Ë]NÂX[Î]\Ù]ÎÂÈX[	ùodù§'ùìîùb*yå*	Ë]NXÚÙÜÝ[ÛÛÜ	ÈÌMÍPÈKÈX[	ùodù§'ùè­¹¹bÈ, &IË]NXÚÙÜÝ[ÛÛÜ	ÈÐÈBBKÜ[ÛÎÈ\ÜÛÚ]NYKØØ[\ÎÈNÈXÚÜÎÈØ[XÚÎ[Ý[ÛHÈ]\
+ÌL
+KÓØØ[TÝ[Ê
+H
+È	ù.!ÉÎÈHHHHBJNÂËÈÝ\ÝÛYH\]ÈÚ\
+ØÝ[Y[Ù][[Y[RY
+	ØÚ\ØÝ\ÝÛY\ÉÊKÂ\N	Ø\Ë]NÈX[ÎÓ]\Ù]ÎÞÈX[	ùb*yå*:,ª9âiùadù`f9de¹."Ë]NÕXÚÙÜÝ[ÛÛÜ	ÈÑQ
+ÌÌIÈWHKÜ[ÛÎÈ\ÜÛÚ]NYK[^^\Î	ÞIËØØ[\ÎÈÈXÚÜÎÈØ[XÚÎ[Ý[ÛHÈ]\
+ÌL
+KÓØØ[TÝ[Ê
+H
+È	ù.!ÉÎÈHHHHBJNÂËÈÝ]ÛÝ\Ú[ÈÛÜÝ]ÈÚ\
+ØÝ[Y[Ù][[Y[RY
+	ØÚ\ÝXÛÜÝ	ÊKÂ\N	Ø\Ë]NÂX[Î[ÛË]\Ù]ÎÂÈX[	ù`«z.âº,®ÉË]NÞWÝKXÚÙÜÝ[ÛÛÜ	ÈÑÈKÈX[	ùb*yå*:,ª9âjyhì¹."Ë]NÞWÜ^[ËXÚÙÜÝ[ÛÛÜ	ÈÑQ
+ÑÌIË\N	Û[IËÜ\ÛÛÜ	ÈÑQ
+ÑÌIË[[ÙHKÈX[	ùì¥ùb*IË]NÞWÙÜÜÜËXÚÙÜÝ[ÛÛÜ	ÈÌ
+L	Ë\N	Û[IËÜ\ÛÛÜ	ÈÌ
+L	Ë[ÝMË
+Ý
+K
+ÍÝÌËLÝN
+LËLÝK
+NK
+ÎLÝËLÍ
+ÎÝMIOÝÛ\ÜÏH]NK
+Î
+ÌMOÝÝù§"ÝLÍLË
+ÝMLLÝLK
+ÝL
+NKLLÝL
+NKMNOÝK
+OÝMIOÝÛ\ÜÏH]MK
+LÍÏÝÝÝXOÙ]Ù]Ù]ØÜ\MKÝMKÝ	OÝLNÝNÝNKIOÝÛ\ÜÏH]ÝÝNÏÝ¸à©8àª¸àìùc%¹méOÝÛ\ÜÏH\ÚHÝÛ\ÜÏH^[ÈLÝLÝ	OÝK
+MÝÎ
+ÝNKIOÝÛ\ÜÏH]ÝÝÝXOÙ]Ù]Ù]]Û\ÜÏHÛÛ[YHX]Û\ÜÏHÚ\YÜY]Û\ÜÏHÚ\XÞ[Ï¹§"9b)y`«z.â¸à¬øà®xàâ9£ª9éîÏÚÏØ[\ÈYHÚ\ÝXÛÜÝØØ[\ÏÙ]]Û\ÜÏHÚ\XÞ[Ï¹§"9b)y`«z.â¸à¬øà®xàâ9¦#¹í,ÚÏXO¹§"Ý¹`«z.âºaäzhcOÝº`&º(c9¥¦OÝ¸àgxàk¹.åÝ¹`«z.â¹d":*"Ý¹b*yå*9hì¹."Ý¹më¹o%yb*yæâÝ¹b*yæâ¹ã¡ÏÝÛ\ÜÏH]¹bcy§'ùd#9§"9`«z.âÝÝù§"ÝKÍË
+LÝMM
+ÌÝKÝ
+K
+Ý
+K
+ÌÝÌÝMK	OÝÛ\ÜÏH]MKÍ
+
+ÝÝ9§"ÝML
+
+NOÝM
+LÝNÝMË
+MMOÝKL
+LÏÝË
+LÍËL
+ÝM	OÝÛ\ÜÏH]MM
+ÎLÏÝÝy§"Ý
+LKÝÌLÌÝÌLÝMMÌÝ
+NÝË
+ÍÌÝMKOÝÛ\ÜÏH]N
+N
+ÍÝÝL9§"ÝNKM
+ÌÝÍÌKNLÝÌÝNK
+LNLÝÌÌËÝ
+LÝN	OÝÛ\ÜÏH]ÝÝLy§"ÝMLMÝKÌÝMK
+ÝMË
+ÍÌKLÝK
+ÌÎKMÝËM
+ÝNÉOÝÛ\ÜÏH]LLLÝÝL¹§"ÝMK
+MLËÍÝÎKOÝLLÝM
+K
+ÏÝÌKÍÝËN
+K
+ÌÏÝNKÉOÝÛ\ÜÏH]Ë
+NMÝÝy§"ÝMMÍ
+LÝMLÝ
+ÌÝMË
+ÍLÝ
+
+KÝËK
+ÌÍÝMIOÝÛ\ÜÏH]NKLË
+OÝÝ¹§"ÝMË
+Ý
+K
+ÍÝÌËLÝN
+LËLÝK
+NK
+ÎLÝËLÍ
+ÎÝMIOÝÛ\ÜÏH]NK
+Î
+ÌMOÝÝù§"ÝLÍLË
+ÝMLLÝLK
+ÝL
+NKLLÝL
+NKMNOÝK
+OÝMIOÝÛ\ÜÏH]MK
+LÍÏÝÝÝXOÙ]Ù]Ù]ØÜ\², 200164065, 21216667, 19637240, 21385210, 18639260, 19187795, 15177084], "cy_riYo": [26061700, 2102853, 24698260, 24333000, 21739896, 20231276, 20685828, 21659790, 12419159], "cy_total": [46429020, 38741385, 44862325,445549667, 41377136, 41616486, 39325088, 40847585, 27596243], "py_jisha": [24294677, 20823939, 21760440, 22271882, 21473593, 21086295, 19368855, 18735905, 19675335], "py_riyo": [19478200, 17955255, 21961324, 26921900, 25283310, 24695372, 23315800, 23338800, 24835527], "py_total": [43772877, 38779194, 43721764, 49193782, 46756903, 45781667, 42684655, 42074705, 44510862], "cy_u": [21037500, 16892459, 20051000, 19014700, 16890942, 15553234, 16976492, 17804000, 10353400], "cy_gross": [25391520, 21848926, 24811325, 26534967, 24486194, 26063252, 22348596, 23043585, 17242843], "py_u": [14648138, 13756883, 17336321, 21462062, 20214862, 19656626, 18814741, 19352245, 20419577]};
+const VC = {"labels": ["7\u6708", "8\u6708", "9\u6708", "10\u6708", "11\u6708", "12\u6708", "1\u6708", "2\u6708", "3\u6708"], "datasets": [{"label": "\u4eac\u90fd\u3000130\u3000\u3046\u3000729", "data": [1765700, 1436950, 1570500, 1476450, 1586450, 1803250, 1391300, 1090950, 1017203]}, {"label": "\u4eac\u90fd131\u3092\u3000358", "data": [1479100, 1604472, 1487700, 1436200, 1365500, 1520175, 1267150, 1411500, 1167754]}, {"label": "\u4eac\u90fd130\u3044\u30002955", "data": [1491000, 1136000, 1420000, 1562000, 1278000, 1349000, 1349000, 1260000, 1120000]}, {"label": "\u4eac\u90fd108\u3051\u3000888", "data": [1406450, 1014300, 1248550, 1535677, 1232800, 1347800, 1173800, 1050250, 1050162]}, {"label": "\u4eac\u90fd113\u3046\u3000777", "data": [1170350, 1008400, 1178700, 1259850, 1094300, 1211050, 1291600, 1003600, 1004680]}, {"label": "\u4eac\u90fd130\u3000\u3042\u3000297", "data": [1260000, 960000, 1200000, 1200000, 1140000, 1200000, 1080000, 1080000, 1020000]}, {"label": "\u4eac\u90fd130\u3044\u3000629", "data": [995050, 677090, 834550, 1422500, 1304950, 1527910, 1086830, 972900, 1025354]}, {"label": "\u4eac\u90fd130\u3048\u3000929", "data": [1137400, 852200, 1085700, 1137400, 930600, 1034000, 982300, 878900, 878900]}, {"label": "\u4eac\u90fd130\u3042\u30002627", "data": [1281820, 706720, 1239180, 1313040, 1158740, 1084900, 844980, 1040120, 239022]}, {"label": "\u4eac\u90fd130\u3042\u30001729", "data": [980000, 910000, 938000, 945000, 880000, 940000, 905000, 858300, 854001]}]};
+const TL = ["13tW", "4tW", "\u4e0d\u660e", "2t\u5e73", "12t\u5e73", "4tWPG", "2t\u7bb1"];
+const TV = [114332197, 17657000, 9914153, 9591000, 8908522, 8210301, 4800000];
+const TPV = [152418830, 27567769, 7710389, 13397189, 13335260, 10436000, 7050000];
+const CL = ["\u962a\u795e\u30bb\u30f3\u30b3\u30fc\u897f\u8107\uff08\u6c37\u4e0a\uff09", "\u30b8\u30e3\u30d1\u30f3\u30c8\u30e9\u30d5\u30a3\u30c3\u30af", "\u4f0f\u898b\u904b\u9001", "\u4e09\u5354\u6bb5\u30dc\u30fc\u30eb", "\u5317\u4fe1\u904b\u8f38", "\uff7c\uff9e\uff6a\uff70\uff8c\uff9f\uff9a\uff6f\uff78\uff7d", "\u962a\u795e\u30bb\u30f3\u30b3\u30fc\u897f\u8107\uff08\u672c\u793e\uff09", "\u30a2\u30a4\u30ba", "MP", "\u5927\u65e5\u5009\u696d", "\u65e5\u6804\uff08865\u5b87\u91ce\u30a8\u30ad\u30b9\u30d7", "\u30bb\u30f3\u30b3\u30fc\u3000\u6817\u6771\u55b6\u696d\u6240", "\u4e09\u548c\u7d19\u5668\u3000\u5c02\u5c5e", "\u65e5\u6804\uff085485\u5b87\u91ce\u30a8\u30ad\u30b9", "\u65e5\u6804\uff088107MIKAT"];
+const CV = [16580133, 15847000, 14025500, 13377000, 12447000, 11830950, 9401000, 7955000, 7379000, 6666540, 5940000, 5868967, 5566459, 5280000, 5095248];
+
+function showTab(n) {
+  document.querySelectorAll('.content').forEach(function(el) { el.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(el) { el.classList.remove('active'); });
+  document.getElementById('tab' + n).classList.add('active');
+  document.querySelectorAll('.tab')[n].classList.add('active');
+}
+
+const colors10 = ['#2E75B6','#ED7D31','#00B050','#FFC000','#7030A0','#FF4444','#00B0F0','#92D050','#FF6B9D','#8B4513'];
+
+// Monthly chart
+new Chart(document.getElementById('chart_monthly'), {
+  type: 'bar',
+  data: {
+    labels: D.months,
+    datasets: [
+      { label: 'èªç¤¾å£²ä¸', data: D.cy_jisha, backgroundColor: '#2E75B6' },
+      { label: 'å©ç¨è²¨ç©', data: D.cy_riyo, backgroundColor: '#ED7D31' }
+    ]
+  },
+  options: { responsive: true, scales: { y: { ticks: { callback: function(v) { return (v/10000).toLocaleString() + 'ä¸'; } } } } }
+});
+
+// YoY chart
+new Chart(document.getElementById('chart_yoy'), {
+  type: 'bar',
+  data: {
+    labels: D.months,
+    datasets: [
+      { label: 'å½æåè¨', data: D.cy_total, backgroundColor: '#2E75B6' },
+      { label: 'åæåæ', data: D.py_total, backgroundColor: '#BFBFBF' }
+    ]
+  },
+  options: { responsive: true, scales: { y: { ticks: { callback: function(v) { return (v/10000).toLocaleString() + 'ä¸'; } } } } }
+});
+
+// Vehicle line chart
+var vds = VC.datasets.map(function(ds, i) {
+  return { label: ds.label, data: ds.data, borderColor: colors10[i], fill: false, tension: 0.3 };
+});
+new Chart(document.getElementById('chart_vehicles'), {
+  type: 'line',
+  data: { labels: VC.labels, datasets: vds },
+  options: { responsive: true, scales: { y: { ticks: { callback: function(v) { return (v/10000).toLocaleString() + 'ä¸'; } } } } }
+});
+
+// Type bar
+new Chart(document.getElementById('chart_types'), {
+  type: 'bar',
+  data: { labels: TL, datasets: [{ label: '9ã¶æå£²ä¸', data: TV, backgroundColor: '#2E75B6' }] },
+  options: { responsive: true, indexAxis: 'y', scales: { x: { ticks: { callback: function(v) { return (v/10000).toLocaleString() + 'ä¸'; } } } } }
+});
+
+// Type comparison
+new Chart(document.getElementById('chart_types_cmp'), {
+  type: 'bar',
+  data: {
+    labels: TL,
+    datasets: [
+      { label: 'å½æ9ã¶æ', data: TV, backgroundColor: '#2E75B6' },
+      { label: 'åæå¹´é', data: TPV, backgroundColor: '#BFBFBF' }
+    ]
+  },
+  options: { responsive: true, scales: { y: { ticks: { callback: function(v) { return (v/10000).toLocaleString() + 'ä¸'; } } } } }
+});
+
+// Customer bar
+new Chart(document.getElementById('chart_customers'), {
+  type: 'bar',
+  data: { labels: CL, datasets: [{ label: 'å©ç¨è²¨ç©å£²ä¸', data: CV, backgroundColor: '#ED7D31' }] },
+  options: { responsive: true, indexAxis: 'y', scales: { x: { ticks: { callback: function(v) { return (v/10000).toLocaleString() + 'ä¸'; } } } } }
+});
+
+// Outsourcing cost
+new Chart(document.getElementById('chart_ucost'), {
+  type: 'bar',
+  data: {
+    labels: D.months,
+    datasets: [
+      { label: 'å­è»è²»', data: D.cy_u, backgroundColor: '#FF6B6B' },
+      { label: 'å©ç¨è²¨ç©å£²ä¸', data: D.cy_riyo, backgroundColor: '#ED7D31', type: 'line', borderColor: '#ED7D31', fill: false },
+      { label: 'ç²å©', data: D.cy_gross, backgroundColor: '#00B050', type: 'line', borderColor: '#00B050', fill: false }
+    ]
+  },
+  options: { responsive: true, scales: { y: { ticks: { callback: function(v) { return (v/10000).toLocaleString() + 'ä¸'; } } } } }
+});
+</script>
+</body></html>
