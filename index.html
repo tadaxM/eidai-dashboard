@@ -2,322 +2,237 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>永代運輸倉庫 経営ダッシュボード【当期】</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Helvetica Neue',Arial,'Hiragino Sans',sans-serif;background:#f0f2f5;color:#333;font-size:14px}
-.header{background:linear-gradient(135deg,#1a3a5c,#2563a8);color:#fff;padding:20px 24px}
-.header h1{font-size:1.4em;font-weight:700;letter-spacing:0.02em}
-.header p{font-size:0.85em;opacity:0.85;margin-top:4px}
-.container{max-width:1200px;margin:0 auto;padding:16px}
-.alert-banner{background:#fffbeb;border-left:4px solid #f59e0b;border-radius:6px;padding:12px 16px;margin-bottom:16px;display:flex;gap:12px;align-items:flex-start}
-.alert-icon{font-size:1.3em;margin-top:2px}
-.alert-body strong{display:block;color:#92400e;font-size:0.95em;margin-bottom:4px}
-.alert-body{color:#78350f;font-size:0.85em;line-height:1.5}
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:16px}
-.kpi-card{background:#fff;border-radius:8px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.kpi-card.kpi-incomplete{border-left:4px solid #f59e0b}
-.kpi-label{font-size:0.78em;color:#666;margin-bottom:6px}
-.kpi-value{font-size:1.5em;font-weight:700;color:#1a3a5c}
-.kpi-value.na{font-size:1.1em;color:#999}
-.incomplete-tag{display:inline-block;font-size:0.65em;background:#fef3c7;color:#92400e;border-radius:4px;padding:2px 6px;margin-left:6px;vertical-align:middle}
-.section{background:#fff;border-radius:8px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.section h2{font-size:1.0em;font-weight:700;color:#1a3a5c;border-bottom:2px solid #2563a8;padding-bottom:8px;margin-bottom:12px}
-.chart-box{background:#f8f9fa;border:1px solid #e0e0e0;border-radius:8px;padding:12px;margin-bottom:12px;overflow-x:auto}
-.chart-scroll{position:relative;height:260px;min-width:520px}
-table{width:100%;border-collapse:collapse;font-size:0.82em}
-th{background:#1a3a5c;color:#fff;padding:7px 10px;text-align:left;font-weight:600}
-td{padding:6px 10px;border-bottom:1px solid #eee}
-tr:hover td{background:#f5f7fa}
-tr.partial td{background:#fff8e1}
-tr.total-row td{background:#e8edf5;font-weight:700}
-td.num{text-align:right;font-family:monospace}
-td.na{color:#999;text-align:center}
-.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-.tab{padding:6px 14px;border-radius:6px;cursor:pointer;border:1px solid #ddd;background:#f0f2f5;font-size:0.85em;transition:all 0.2s}
-.tab.active{background:#1a3a5c;color:#fff;border-color:#1a3a5c}
-.tab-content{display:none}.tab-content.active{display:block}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:640px){.two-col{grid-template-columns:1fr}}
-.partial-note{font-size:0.78em;color:#d97706;margin-top:6px}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI','Hiragino Kaku Gothic ProN',sans-serif; background:#f0f2f5; color:#333; }
+.header { background:linear-gradient(135deg,#1a3a5c 0%,#2c5f8a 100%); color:#fff; padding:20px 24px; }
+.header h1 { font-size:1.4rem; margin-bottom:4px; }
+.header .sub { font-size:0.85rem; opacity:0.85; }
+.container { max-width:1200px; margin:0 auto; padding:16px; }
+.alert-banner { background:#fff; border-left:4px solid #f0ad4e; padding:14px 18px; margin-bottom:16px; border-radius:6px; display:flex; gap:12px; align-items:flex-start; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.alert-icon { font-size:1.3rem; }
+.alert-body strong { display:block; margin-bottom:4px; color:#856404; }
+.alert-body { font-size:0.88rem; color:#666; }
+.kpi-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-bottom:20px; }
+.kpi { background:#fff; border-radius:8px; padding:18px; box-shadow:0 1px 3px rgba(0,0,0,0.08); border-left:4px solid #1a3a5c; }
+.kpi-incomplete { border-left-color:#f0ad4e; }
+.kpi .kpi-label { font-size:0.82rem; color:#888; margin-bottom:6px; }
+.kpi .kpi-value { font-size:1.6rem; font-weight:700; color:#1a3a5c; }
+.kpi .kpi-value.incomplete { color:#856404; }
+.incomplete-tag { display:inline-block; background:#fff3cd; color:#856404; font-size:0.7rem; padding:2px 6px; border-radius:3px; margin-left:6px; vertical-align:middle; }
+.section { background:#fff; border-radius:8px; padding:20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.section h2 { font-size:1.1rem; color:#1a3a5c; margin-bottom:14px; padding-bottom:8px; border-bottom:2px solid #e8ecf1; }
+.chart-box { background:#f8f9fa; border:1px solid #e0e0e0; border-radius:8px; padding:16px; margin-bottom:12px; overflow-x:auto; }
+.chart-scroll { position:relative; height:280px; min-width:520px; }
+.chart-scroll-small { position:relative; height:220px; min-width:400px; }
+table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+th { background:#f0f2f5; padding:8px 10px; text-align:right; font-weight:600; color:#555; border-bottom:2px solid #ddd; }
+th:first-child { text-align:left; }
+td { padding:7px 10px; text-align:right; border-bottom:1px solid #eee; }
+td:first-child { text-align:left; font-weight:500; }
+tr:hover { background:#f8f9fa; }
+.na { color:#999; font-style:italic; }
+.tab-nav { display:flex; gap:4px; margin-bottom:16px; flex-wrap:wrap; }
+.tab-btn { padding:8px 16px; border:1px solid #ddd; background:#fff; border-radius:6px 6px 0 0; cursor:pointer; font-size:0.85rem; color:#666; }
+.tab-btn.active { background:#1a3a5c; color:#fff; border-color:#1a3a5c; }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:768px) {
+  .two-col { grid-template-columns:1fr; }
+  .kpi-row { grid-template-columns:repeat(2,1fr); }
+  .header h1 { font-size:1.1rem; }
+}
+.footer { text-align:center; padding:16px; font-size:0.78rem; color:#999; }
+.tbl-scroll { overflow-x:auto; }
 </style>
 </head>
 <body>
 <div class="header">
   <h1>株式会社 永代運輸倉庫　経営ダッシュボード【当期】</h1>
-  <p>対象期間: 2025年7月〜2026年4月（9ヶ月＋当月途中集計 〜4/03）　最終更新: 2026年4月9日</p>
+  <div class="sub">第48期（2025/07/01〜2026/06/30）｜最終更新: 2026/04/15（データ基準日: 2026/04/03）</div>
 </div>
 <div class="container">
 
-<!-- 警告バナー -->
+<!-- Alert Banner -->
 <div class="alert-banner">
   <div class="alert-icon">⚠️</div>
   <div class="alert-body">
-    <strong>原価データが未入力のため、自社粗利・傭車費は算出できません</strong>
-    cost_data.csv（自社原価）および傭車費データが提供され次第、粗利が自動計算されます。
-    また前期売上データがないため対前期比は表示できません。
+    <strong>自社運送の原価データが未入力のため、自社粗利は算出できません</strong>
+    原価データ（cost_data.csv）が提供され次第、粗利が自動計算されます。利用貨物の粗利は傭車費未取得のため暫定表示です。
   </div>
 </div>
 
-<!-- KPIカード -->
-<div class="kpi-grid">
-  <div class="kpi-card">
-    <div class="kpi-label">自社運送　累計売上</div>
-    <div class="kpi-value">¥191,680千</div>
+<!-- KPI Row -->
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-label">自社運送 累計売上</div>
+    <div class="kpi-value">191,680千円</div>
   </div>
-  <div class="kpi-card kpi-incomplete">
-    <div class="kpi-label">自社運送　粗利<span class="incomplete-tag">原価未入力</span></div>
-    <div class="kpi-value na">算出不可</div>
+  <div class="kpi kpi-incomplete">
+    <div class="kpi-label">自社運送 粗利<span class="incomplete-tag">原価未入力</span></div>
+    <div class="kpi-value incomplete">算出不可</div>
   </div>
-  <div class="kpi-card">
-    <div class="kpi-label">利用貨物　累計売上</div>
-    <div class="kpi-value">¥207,196千</div>
+  <div class="kpi">
+    <div class="kpi-label">利用貨物 累計売上</div>
+    <div class="kpi-value">207,196千円</div>
   </div>
-  <div class="kpi-card kpi-incomplete">
-    <div class="kpi-label">利用貨物　粗利<span class="incomplete-tag">傭車費未取得</span></div>
-    <div class="kpi-value na">算出不可</div>
+  <div class="kpi kpi-incomplete">
+    <div class="kpi-label">利用貨物 粗利<span class="incomplete-tag">傭車費未取得</span></div>
+    <div class="kpi-value incomplete">算出不可</div>
   </div>
-  <div class="kpi-card">
-    <div class="kpi-label">当期　累計売上合計</div>
-    <div class="kpi-value">¥398,875千</div>
+  <div class="kpi">
+    <div class="kpi-label">全社 累計売上</div>
+    <div class="kpi-value">398,875千円</div>
   </div>
 </div>
 
-<!-- セクション2: 自社運送 -->
+<!-- Tab Navigation -->
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('tab-monthly')">月別推移</button>
+  <button class="tab-btn" onclick="showTab('tab-jisha')">自社運送</button>
+  <button class="tab-btn" onclick="showTab('tab-riyo')">利用貨物</button>
+  <button class="tab-btn" onclick="showTab('tab-kyoten')">拠点別</button>
+  <button class="tab-btn" onclick="showTab('tab-ranking')">車両・顧客</button>
+</div>
+
+<!-- Tab 1: Monthly -->
+<div id="tab-monthly" class="tab-panel active">
 <div class="section">
-  <h2>📦 自社運送　売上・粗利</h2>
+  <h2>月次売上推移（自社 vs 利用貨物）</h2>
+  <div class="chart-box"><div class="chart-scroll"><canvas id="chart-monthly"></canvas></div></div>
+  <div class="tbl-scroll">
+  <table>
+    <tr><th>月</th><th>7月</th><th>8月</th><th>9月</th><th>10月</th><th>11月</th><th>12月</th><th>1月</th><th>2月</th><th>3月</th><th>4月</th><th>5月</th><th>6月</th><th>累計</th></tr><tr><td><strong>合計</strong></td><td><strong>49,051</strong></td><td><strong>40,442</strong></td><td><strong>47,003</strong></td><td><strong>47,618</strong></td><td><strong>43,351</strong></td><td><strong>43,366</strong></td><td><strong>40,975</strong></td><td><strong>42,519</strong></td><td><strong>41,016</strong></td><td><strong>3,534</strong></td><td class="na">—</td><td class="na">—</td><td><strong>398,875</strong></td></tr><tr><td>自社運送</td><td>21,815</td><td>18,566</td><td>21,265</td><td>22,340</td><td>20,623</td><td>22,327</td><td>19,505</td><td>20,029</td><td>23,331</td><td>1,879</td><td class="na">—</td><td class="na">—</td><td>191,680</td></tr><tr><td>利用貨物</td><td>27,236</td><td>21,876</td><td>25,738</td><td>25,279</td><td>22,728</td><td>21,040</td><td>21,470</td><td>22,490</td><td>17,684</td><td>1,655</td><td class="na">—</td><td class="na">—</td><td>207,196</td></tr></table></div></div></div>
+<div id="tab-jisha" class="tab-panel">
+<div class="section">
+  <h2>自社運送 月次売上</h2>
   <div class="chart-box"><div class="chart-scroll"><canvas id="chart-jisha"></canvas></div></div>
-  <p class="partial-note">※ 4月は1〜3日の途中集計</p>
-  <table style="margin-top:10px">
-    <tr><th>月</th><th>売上（千円）</th><th>原価（千円）</th><th>粗利（千円）</th><th>粗利率</th></tr>
-    <tr class=""><td>2025年7月</td><td class="num">21,815</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class=""><td>2025年8月</td><td class="num">18,566</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class=""><td>2025年9月</td><td class="num">21,265</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class=""><td>2025年10月</td><td class="num">22,340</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class=""><td>2025年11月</td><td class="num">20,623</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class=""><td>2025年12月</td><td class="num">22,327</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class=""><td>2026年1月</td><td class="num">19,505</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class=""><td>2026年2月</td><td class="num">20,029</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class=""><td>2026年3月</td><td class="num">23,331</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class="partial"><td>2026年4月</td><td class="num">1,879</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class=""><td>2026年5月</td><td class="num">—</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class=""><td>2026年6月</td><td class="num">—</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-<tr class="total-row"><td>累計</td><td class="num">191,680</td><td class="na">算出不可</td><td class="na">—</td><td class="na">—</td></tr>
-  </table>
-</div>
-
-<!-- セクション4: 利用貨物 -->
+  <div class="tbl-scroll"><table>
+    <tr><th>月</th><th>売上</th><th>原価</th><th>粗利</th><th>粗利率</th></tr><tr><td>7月</td><td>21,815</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>8月</td><td>18,566</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>9月</td><td>21,265</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>10月</td><td>22,340</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>11月</td><td>20,623</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>12月</td><td>22,327</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>1月</td><td>19,505</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>2月</td><td>20,029</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>3月</td><td>23,331</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>4月</td><td>1,879</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>5月</td><td class="na">—</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>6月</td><td class="na">—</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr style="font-weight:700;border-top:2px solid #333"><td>累計</td><td>191,680</td><td class="na">未入力</td><td class="na">算出不可</td><td class="na">—</td></tr></table></div></div></div>
+<div id="tab-riyo" class="tab-panel">
 <div class="section">
-  <h2>🚛 利用貨物　売上・粗利</h2>
+  <h2>利用貨物 月次売上</h2>
   <div class="chart-box"><div class="chart-scroll"><canvas id="chart-riyo"></canvas></div></div>
-  <p class="partial-note">※ 4月は1〜3日の途中集計　※傭車費は未取得のため粗利算出不可</p>
-  <table style="margin-top:10px">
-    <tr><th>月</th><th>売上（千円）</th><th>傭車費（千円）</th><th>粗利（千円）</th><th>粗利率</th></tr>
-    <tr class=""><td>2025年7月</td><td class="num">27,236</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class=""><td>2025年8月</td><td class="num">21,876</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class=""><td>2025年9月</td><td class="num">25,738</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class=""><td>2025年10月</td><td class="num">25,279</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class=""><td>2025年11月</td><td class="num">22,728</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class=""><td>2025年12月</td><td class="num">21,040</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class=""><td>2026年1月</td><td class="num">21,470</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class=""><td>2026年2月</td><td class="num">22,490</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class=""><td>2026年3月</td><td class="num">17,684</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class="partial"><td>2026年4月</td><td class="num">1,655</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class=""><td>2026年5月</td><td class="num">—</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class=""><td>2026年6月</td><td class="num">—</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class="total-row"><td>累計</td><td class="num">207,196</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr>
-  </table>
-</div>
-
-<!-- セクション5: 拠点別収支 -->
+  <div class="tbl-scroll"><table>
+    <tr><th>月</th><th>売上</th><th>傭車費</th><th>粗利</th><th>粗利率</th></tr><tr><td>7月</td><td>27,236</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>8月</td><td>21,876</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>9月</td><td>25,738</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>10月</td><td>25,279</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>11月</td><td>22,728</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>12月</td><td>21,040</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>1月</td><td>21,470</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>2月</td><td>22,490</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>3月</td><td>17,684</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>4月</td><td>1,655</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr><tr><td>5月</td><td class="na">—</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>6月</td><td class="na">—</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr style="font-weight:700;border-top:2px solid #333"><td>累計</td><td>207,196</td><td class="na">未取得</td><td class="na">算出不可</td><td class="na">—</td></tr></table></div></div></div>
+<div id="tab-kyoten" class="tab-panel">
 <div class="section">
-  <h2>🏢 拠点別収支</h2>
-  <div class="two-col">
-    <div class="chart-box"><div class="chart-scroll"><canvas id="chart-kyoten"></canvas></div></div>
-    <div class="chart-box" style="height:auto;min-height:280px"><canvas id="chart-donut"></canvas></div>
-  </div>
-  <table style="margin-top:10px">
-    <tr><th>拠点</th><th>累計売上（千円）</th><th>構成比</th><th>粗利</th><th>粗利率</th></tr>
-    <tr><td>本社</td><td class="num">166,799</td><td>87.0%</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr><td>滋賀</td><td class="num">23,605</td><td>12.3%</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr><td>氷上</td><td class="num">1,274</td><td>0.7%</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr><td>利用貨物（全社共通）</td><td class="num">207,196</td><td>—</td><td class="na">算出不可</td><td class="na">—</td></tr>
-<tr class="total-row"><td>合計</td><td class="num">398,875</td><td>100%</td><td class="na">算出不可</td><td class="na">—</td></tr>
-  </table>
-  <h3 style="margin-top:14px;font-size:0.9em;color:#1a3a5c">月次拠点別推移</h3>
-  <table style="margin-top:8px">
-    <tr><th>月</th><th>本社（千円）</th><th>滋賀（千円）</th><th>氷上（千円）</th><th>合計（千円）</th></tr>
-    <tr class=""><td>2025年7月</td><td class="num">20,882</td><td class="num">932</td><td class="num">0</td><td class="num">21,814</td></tr>
-<tr class=""><td>2025年8月</td><td class="num">16,301</td><td class="num">2,265</td><td class="num">0</td><td class="num">18,566</td></tr>
-<tr class=""><td>2025年9月</td><td class="num">19,125</td><td class="num">2,140</td><td class="num">0</td><td class="num">21,265</td></tr>
-<tr class=""><td>2025年10月</td><td class="num">19,638</td><td class="num">2,702</td><td class="num">0</td><td class="num">22,340</td></tr>
-<tr class=""><td>2025年11月</td><td class="num">17,982</td><td class="num">2,641</td><td class="num">0</td><td class="num">20,623</td></tr>
-<tr class=""><td>2025年12月</td><td class="num">18,588</td><td class="num">3,132</td><td class="num">606</td><td class="num">22,326</td></tr>
-<tr class=""><td>2026年1月</td><td class="num">16,808</td><td class="num">2,695</td><td class="num">2</td><td class="num">19,505</td></tr>
-<tr class=""><td>2026年2月</td><td class="num">17,001</td><td class="num">3,028</td><td class="num">0</td><td class="num">20,029</td></tr>
-<tr class=""><td>2026年3月</td><td class="num">19,061</td><td class="num">3,608</td><td class="num">662</td><td class="num">23,331</td></tr>
-<tr class="partial"><td>2026年4月</td><td class="num">1,413</td><td class="num">462</td><td class="num">4</td><td class="num">1,879</td></tr>
-  </table>
-</div>
-
-<!-- セクション6: ランキング -->
+  <h2>拠点別 月次売上推移</h2>
+  <div class="chart-box"><div class="chart-scroll"><canvas id="chart-kyoten"></canvas></div></div>
+  <div class="tbl-scroll"><table>
+    <tr><th>拠点</th><th>累計売上</th><th>構成比</th><th>車両数</th></tr><tr><td>本社</td><td>166,799</td><td>87.0%</td><td>23台</td></tr><tr><td>滋賀</td><td>23,605</td><td>12.3%</td><td>6台</td></tr><tr><td>氷上</td><td>1,274</td><td>0.7%</td><td>1台</td></tr><tr style="font-weight:700;border-top:2px solid #333"><td>自社計</td><td>191,678</td><td>100%</td><td>30台</td></tr><tr><td>利用貨物（全社共通）</td><td>207,196</td><td>—</td><td>—</td></tr></table></div></div>
 <div class="section">
-  <h2>🏆 車両・顧客ランキング</h2>
-  <div class="two-col">
-    <div>
-      <h3 style="font-size:0.9em;color:#444;margin-bottom:8px">自社車両別　売上TOP10</h3>
-      <div class="chart-box"><div class="chart-scroll" style="height:280px"><canvas id="chart-veh"></canvas></div></div>
-      <table>
-        <tr><th>順位</th><th>車両名</th><th>拠点</th><th>売上（千円）</th></tr>
-        <tr><td>1</td><td>京都　130　う　729</td><td>本社</td><td class="num">14,724</td></tr>
-<tr><td>2</td><td>京都131を　358</td><td>本社</td><td class="num">13,481</td></tr>
-<tr><td>3</td><td>京都130い　2955</td><td>本社</td><td class="num">12,665</td></tr>
-<tr><td>4</td><td>京都130　あ　297</td><td>本社</td><td class="num">12,624</td></tr>
-<tr><td>5</td><td>京都108け　888</td><td>本社</td><td class="num">11,715</td></tr>
-<tr><td>6</td><td>京都113う　777</td><td>本社</td><td class="num">10,934</td></tr>
-<tr><td>7</td><td>京都130あ　2627</td><td>本社</td><td class="num">10,567</td></tr>
-<tr><td>8</td><td>京都130い　629</td><td>本社</td><td class="num">10,469</td></tr>
-<tr><td>9</td><td>京都130え　929</td><td>本社</td><td class="num">9,279</td></tr>
-<tr><td>10</td><td>京都130あ　1729</td><td>本社</td><td class="num">8,502</td></tr>
-      </table>
-    </div>
-    <div>
-      <h3 style="font-size:0.9em;color:#444;margin-bottom:8px">得意先別　売上TOP15</h3>
-      <div class="chart-box"><div class="chart-scroll" style="height:280px"><canvas id="chart-cust"></canvas></div></div>
-      <table>
-        <tr><th>順位</th><th>得意先名</th><th>売上（千円）</th></tr>
-        <tr><td>1</td><td>阪神センコー西脇（本社）一般</td><td class="num">34,311</td></tr>
-<tr><td>2</td><td>新生物流</td><td class="num">21,981</td></tr>
-<tr><td>3</td><td>センコー京都長岡（ウエルシア）</td><td class="num">19,125</td></tr>
-<tr><td>4</td><td>阪神センコー西脇（氷上）</td><td class="num">19,120</td></tr>
-<tr><td>5</td><td>伏見運送</td><td class="num">16,562</td></tr>
-<tr><td>6</td><td>ジャパントラフィック</td><td class="num">16,482</td></tr>
-<tr><td>7</td><td>三協段ボール</td><td class="num">13,872</td></tr>
-<tr><td>8</td><td>センコー　栗東営業所</td><td class="num">13,694</td></tr>
-<tr><td>9</td><td>北信運輸</td><td class="num">12,973</td></tr>
-<tr><td>10</td><td>JPF</td><td class="num">12,725</td></tr>
-<tr><td>11</td><td>ダンフォス</td><td class="num">12,624</td></tr>
-<tr><td>12</td><td>ｼﾞｪｰﾌﾟﾚｯｸｽ</td><td class="num">12,222</td></tr>
-<tr><td>13</td><td>南大阪センコー運輸整備</td><td class="num">9,807</td></tr>
-<tr><td>14</td><td>センコー　守山営業所</td><td class="num">9,331</td></tr>
-<tr><td>15</td><td>センコー京都長岡（初田）</td><td class="num">8,319</td></tr>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- セクション7: 前期比較 -->
+  <h2>拠点別 売上構成</h2>
+  <div class="chart-box"><div class="chart-scroll-small"><canvas id="chart-kyoten-donut"></canvas></div></div>
+</div></div>
+<div id="tab-ranking" class="tab-panel">
+<div class="two-col">
 <div class="section">
-  <h2>📊 前期比較</h2>
-  <div class="alert-banner" style="margin-bottom:12px">
-    <div class="alert-icon">ℹ️</div>
-    <div class="alert-body"><strong>前期データが未蓄積のため、対前期比較は表示できません</strong>
-    前期（2024年7月〜2025年6月）のデータが蓄積され次第、自動的に表示されます。</div>
-  </div>
-  <div class="chart-box"><div class="chart-scroll"><canvas id="chart-yoy"></canvas></div></div>
-  <table style="margin-top:10px">
-    <tr><th>月</th><th>当期売上（千円）</th><th>前期売上（千円）</th><th>増減（千円）</th><th>対前期比</th></tr>
-    <tr><td>7月</td><td class="num">49,051</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>8月</td><td class="num">40,442</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>9月</td><td class="num">47,003</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>1月</td><td class="num">47,618</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>0月</td><td class="num">43,351</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>1月</td><td class="num">43,366</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>1月</td><td class="num">40,975</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>1月</td><td class="num">42,519</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>2月</td><td class="num">41,016</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>1月</td><td class="num">3,534</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>2月</td><td class="num">—</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr><tr><td>3月</td><td class="num">—</td><td class="na">—</td><td class="na">—</td><td class="na">—</td></tr>
-  </table>
-</div>
-
-</div><!-- /container -->
-
+  <h2>自社車両 売上TOP10</h2>
+  <div class="chart-box"><div class="chart-scroll"><canvas id="chart-vehicle"></canvas></div></div>
+  <div class="tbl-scroll"><table>
+    <tr><th>#</th><th>車両名</th><th>売上</th></tr><tr><td>1</td><td>京都　130　う　729</td><td>14,724</td></tr><tr><td>2</td><td>京都131を　358</td><td>13,481</td></tr><tr><td>3</td><td>京都130い　2955</td><td>12,665</td></tr><tr><td>4</td><td>京都130　あ　297</td><td>12,624</td></tr><tr><td>5</td><td>京都108け　888</td><td>11,715</td></tr><tr><td>6</td><td>京都113う　777</td><td>10,934</td></tr><tr><td>7</td><td>京都130あ　2627</td><td>10,567</td></tr><tr><td>8</td><td>京都130い　629</td><td>10,469</td></tr><tr><td>9</td><td>京都130え　929</td><td>9,279</td></tr><tr><td>10</td><td>京都130あ　1729</td><td>8,502</td></tr></table></div></div>
+<div class="section">
+  <h2>得意先 売上TOP15</h2>
+  <div class="chart-box"><div class="chart-scroll"><canvas id="chart-customer"></canvas></div></div>
+  <div class="tbl-scroll"><table>
+    <tr><th>#</th><th>得意先名</th><th>売上</th></tr><tr><td>1</td><td>阪神センコー西脇（本社）一般</td><td>34,311</td></tr><tr><td>2</td><td>新生物流</td><td>21,981</td></tr><tr><td>3</td><td>センコー京都長岡（ウエルシア）</td><td>19,125</td></tr><tr><td>4</td><td>阪神センコー西脇（氷上）</td><td>19,120</td></tr><tr><td>5</td><td>伏見運送</td><td>16,562</td></tr><tr><td>6</td><td>ジャパントラフィック</td><td>16,482</td></tr><tr><td>7</td><td>三協段ボール</td><td>13,872</td></tr><tr><td>8</td><td>センコー　栗東営業所</td><td>13,694</td></tr><tr><td>9</td><td>北信運輸</td><td>12,973</td></tr><tr><td>10</td><td>JPF</td><td>12,725</td></tr><tr><td>11</td><td>ダンフォス</td><td>12,624</td></tr><tr><td>12</td><td>ｼﾞｪｰﾌﾟﾚｯｸｽ</td><td>12,222</td></tr><tr><td>13</td><td>南大阪センコー運輸整備</td><td>9,807</td></tr><tr><td>14</td><td>センコー　守山営業所</td><td>9,331</td></tr><tr><td>15</td><td>センコー京都長岡（初田）</td><td>8,319</td></tr></table></div></div></div></div>
 <script>
 const MONTHS = ["7月", "8月", "9月", "10月", "11月", "12月", "1月", "2月", "3月", "4月", "5月", "6月"];
 const jisha_sales = [21815, 18566, 21265, 22340, 20623, 22327, 19505, 20029, 23331, 1879, 0, 0];
-const riyo_sales  = [27236, 21876, 25738, 25279, 22728, 21040, 21470, 22490, 17684, 1655, 0, 0];
+const riyo_sales = [27236, 21876, 25738, 25279, 22728, 21040, 21470, 22490, 17684, 1655, 0, 0];
 const total_sales = [49051, 40442, 47003, 47618, 43351, 43366, 40975, 42519, 41016, 3534, 0, 0];
-const prev_total  = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-const kyo_hon = [20882, 16301, 19125, 19638, 17982, 18588, 16808, 17001, 19061, 1413, 0, 0];
-const kyo_shi = [932, 2265, 2140, 2702, 2641, 3132, 2695, 3028, 3608, 462, 0, 0];
-const kyo_hyo = [0, 0, 0, 0, 0, 606, 2, 0, 662, 4, 0, 0];
-const top_veh_labels = ["0729", "358", "2955", "297", "888", "0777", "2627", "629", "0929", "1729"];
-const top_veh_data   = ['京都\u3000130\u3000う\u3000729', '京都131を\u3000358', '京都130い\u30002955', '京都130\u3000あ\u3000297', '京都108け\u3000888', '京都113う\u3000777', '京都130あ\u30002627', '京都130い\u3000629', '京都130え\u3000929', '京都130あ\u30001729'];
-const top_cust_labels= ["阪神センコー西脇（本社）一般", "新生物流", "センコー京都長岡（ウエルシア）", "阪神センコー西脇（氷上）", "伏見運送", "ジャパントラフィック", "三協段ボール", "センコー　栗東営業所", "北信運輸", "JPF", "ダンフォス", "ｼﾞｪｰﾌﾟﾚｯｸｽ", "南大阪センコー運輸整備", "センコー　守山営業所", "センコー京都長岡（初田）"];
-const top_cust_data  = [34311, 21981, 19125, 19120, 16562, 16482, 13872, 13694, 12973, 12725, 12624, 12222, 9807, 9331, 8319];
+const kyoten_honsha = [20882, 16301, 19125, 19638, 17982, 18588, 16808, 17001, 19061, 1413, 0, 0];
+const kyoten_shiga = [932, 2265, 2140, 2702, 2641, 3132, 2695, 3028, 3608, 462, 0, 0];
+const kyoten_hikami = [0, 0, 0, 0, 0, 606, 2, 0, 662, 4, 0, 0];
+const veh_labels = ["京都　130　う　729", "京都131を　358", "京都130い　2955", "京都130　あ　297", "京都108け　888", "京都113う　777", "京都130あ　2627", "京都130い　629", "京都130え　929", "京都130あ　1729"];
+const veh_values = [14724, 13481, 12665, 12624, 11715, 10934, 10567, 10469, 9279, 8502];
+const cust_labels = ["阪神センコー西脇（本社）一般", "新生物流", "センコー京都長岡（ウエルシア）", "阪神センコー西脇（氷上）", "伏見運送", "ジャパントラフィック", "三協段ボール", "センコー　栗東営業所", "北信運輸", "JPF", "ダンフォス", "ｼﾞｪｰﾌﾟﾚｯｸｽ", "南大阪センコー運輸整備", "センコー　守山営業所", "センコー京都長岡（初田）"];
+const cust_values = [34311, 21981, 19125, 19120, 16562, 16482, 13872, 13694, 12973, 12725, 12624, 12222, 9807, 9331, 8319];
+const kyoten_cumul = {"本社": 166799, "滋賀": 23605, "氷上": 1274};
 
-const JISHA_COLOR  = 'rgba(26,58,92,0.75)';
-const RIYO_COLOR   = 'rgba(37,99,168,0.7)';
-const HON_COLOR    = 'rgba(26,58,92,0.8)';
-const SHI_COLOR    = 'rgba(37,99,168,0.75)';
-const HYO_COLOR    = 'rgba(16,185,129,0.75)';
+// Tab switching
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  // Resize charts after tab switch
+  setTimeout(() => { Chart.helpers.each(Chart.instances, c => c.resize()); }, 50);
+}
 
-// chart-jisha
-new Chart(document.getElementById('chart-jisha'),{
-  data:{labels:MONTHS,datasets:[
-    {type:'bar',label:'自社売上（千円）',data:jisha_sales,backgroundColor:JISHA_COLOR,yAxisID:'y'},
-    {type:'line',label:'粗利',data:jisha_sales.map(()=>null),borderColor:'#28a745',pointBackgroundColor:'#28a745',yAxisID:'y2',tension:0.3,spanGaps:false}
-  ]},
-  options:{maintainAspectRatio:false,responsive:true,plugins:{legend:{position:'top'}},
-    scales:{y:{position:'left',ticks:{callback:v=>v.toLocaleString()}},
-             y2:{position:'right',grid:{drawOnChartArea:false}}}}
-});
-
-// chart-riyo
-new Chart(document.getElementById('chart-riyo'),{
-  data:{labels:MONTHS,datasets:[
-    {type:'bar',label:'利用売上（千円）',data:riyo_sales,backgroundColor:RIYO_COLOR,yAxisID:'y'},
-    {type:'line',label:'粗利',data:riyo_sales.map(()=>null),borderColor:'#28a745',yAxisID:'y2',dension:0.3,spanGaps:false}
-  ]},
-  options:{maintainAspectRatio:false,responsive:true,plugins:{legend:{position:'top'}},
-    scales:{y:{position:'left',ticks:{callback:v=>v.toLocaleString()}},
-             y2:{position:'right',grid:{drawOnChartArea:false}}}}
-});
-
-// chart-kyoten (stacked bar)
-new Chart(document.getElementById('chart-kyoten'),{
-  type:'bar',
-  data:{labels:MONTHS,datasets:[
-    {label:'本社',data:kyo_hon,backgroundColor:HON_COLOR,stack:'s'},
-    {label:'滋賀',data:kyo_shi,backgroundColor:SHI_COLOR,stack:'s'},
-    {label:'氷上',data:kyo_hyo,backgroundColor:HYO_COLOR,stack:'s'}
-  ]},
-  options:{maintainAspectRatio:false,responsive:true,plugins:{legend:{position:'top'}},
-    scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>v.toLocaleString()}}}}
-});
-
-// chart-donut
-new Chart(document.getElementById('chart-donut'),{
-  type:'doughnut',
-  data:{
-    labels:['本社','滋賀','氷上','利用貨物'],
-    datasets:[{data:[166799,23605,1274,207196],
-      backgroundColor:[HON_COLOR,SHI_COLOR,HYO_COLOR,'rgba(249,115,22,0.7)']}]
+// Monthly chart
+new Chart(document.getElementById('chart-monthly'), {
+  data: {
+    labels: MONTHS,
+    datasets: [
+      { type:'bar', label:'自社運送', data:jisha_sales, backgroundColor:'rgba(26,58,92,0.75)', stack:'s1' },
+      { type:'bar', label:'利用貨物', data:riyo_sales, backgroundColor:'rgba(52,152,219,0.65)', stack:'s1' }
+    ]
   },
-  options:{maintainAspectRatio:false,responsive:true,plugins:{legend:{position:'right'}}}
+  options: { maintainAspectRatio:false, responsive:true, plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toLocaleString()+'千円'}}}, scales:{y:{ticks:{callback:v=>v.toLocaleString()+'千円'}}} }
 });
 
-// chart-veh
-new Chart(document.getElementById('chart-veh'),{
+// Jisha chart
+new Chart(document.getElementById('chart-jisha'), {
   type:'bar',
-  data:{labels:top_veh_labels,datasets:[{label:'売上（千円）',data:top_veh_data,backgroundColor:JISHA_COLOR}]},
-  options:{indexAxis:'y',maintainAspectRatio:false,responsive:true,
-    plugins:{legend:{display:false}},
-    scales:{x:{ticks:{callback:v=>v.toLocaleString()}}}}
+  data: { labels:MONTHS, datasets:[{ label:'自社売上', data:jisha_sales, backgroundColor:'rgba(26,58,92,0.75)' }] },
+  options: { maintainAspectRatio:false, responsive:true, scales:{y:{ticks:{callback:v=>v.toLocaleString()+'千円'}}} }
 });
 
-// chart-cust
-new Chart(document.getElementById('chart-cust'),{
+// Riyo chart
+new Chart(document.getElementById('chart-riyo'), {
   type:'bar',
-  data:{labels:top_cust_labels,datasets:[{label:'売上（千円）',data:top_cust_data,backgroundColor:RIYO_COLOR}]},
-  options:{indexAxis:'y',maintainAspectRatio:false,responsive:true,
-    plugins:{legend:{display:false}},
-    scales:{x:{ticks:{callback:v=>v.toLocaleString()}}}}
+  data: { labels:MONTHS, datasets:[{ label:'利用貨物売上', data:riyo_sales, backgroundColor:'rgba(52,152,219,0.65)' }] },
+  options: { maintainAspectRatio:false, responsive:true, scales:{y:{ticks:{callback:v=>v.toLocaleString()+'千円'}}} }
 });
 
-// chart-yoy
-new Chart(document.getElementById('chart-yoy'),{
+// Kyoten stacked chart
+new Chart(document.getElementById('chart-kyoten'), {
   type:'bar',
-  data:{labels:MONTHS,datasets:[
-    {label:'当期（千円）',data:total_sales,backgroundColor:JISHA_COLOR},
-    {label:'前期（千円）',data:prev_total.map(v=>v||null),backgroundColor:'rgba(156,163,175,0.6)'}
-  ]},
-  options:{maintainAspectRatio:false,responsive:true,plugins:{legend:{position:'top'}},
-    scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}
+  data: {
+    labels:MONTHS,
+    datasets: [
+      { label:'本社', data:kyoten_honsha, backgroundColor:'rgba(26,58,92,0.75)', stack:'s1' },
+      { label:'滋賀', data:kyoten_shiga, backgroundColor:'rgba(46,134,193,0.7)', stack:'s1' },
+      { label:'氷上', data:kyoten_hikami, backgroundColor:'rgba(93,173,226,0.7)', stack:'s1' }
+    ]
+  },
+  options: { maintainAspectRatio:false, responsive:true, scales:{y:{stacked:true,ticks:{callback:v=>v.toLocaleString()+'千円'}},x:{stacked:true}} }
+});
+
+// Kyoten donut
+new Chart(document.getElementById('chart-kyoten-donut'), {
+  type:'doughnut',
+  data: {
+    labels: ['本社','滋賀','氷上','利用貨物'],
+    datasets: [{ data:[kyoten_cumul['本社'],kyoten_cumul['滋賀'],kyoten_cumul['氷上'],207196], backgroundColor:['#1a3a5c','#2e86c1','#5dade2','#aed6f1'] }]
+  },
+  options: { maintainAspectRatio:false, responsive:true, plugins:{legend:{position:'right'},tooltip:{callbacks:{label:c=>c.label+': '+c.parsed.toLocaleString()+'千円'}}} }
+});
+
+// Vehicle chart
+new Chart(document.getElementById('chart-vehicle'), {
+  type:'bar',
+  data: { labels:veh_labels, datasets:[{ label:'売上', data:veh_values, backgroundColor:'rgba(26,58,92,0.7)' }] },
+  options: { indexAxis:'y', maintainAspectRatio:false, responsive:true, scales:{x:{ticks:{callback:v=>v.toLocaleString()+'千円'}}} }
+});
+
+// Customer chart
+new Chart(document.getElementById('chart-customer'), {
+  type:'bar',
+  data: { labels:cust_labels, datasets:[{ label:'売上', data:cust_values, backgroundColor:'rgba(52,152,219,0.65)' }] },
+  options: { indexAxis:'y', maintainAspectRatio:false, responsive:true, scales:{x:{ticks:{callback:v=>v.toLocaleString()+'千円'}}} }
 });
 </script>
+
+</div>
+<div class="footer">
+  永代運輸倉庫 経営ダッシュボード ｜ データソース: INFO-Logi ｜ 単位: 千円
+</div>
 </body>
 </html>
