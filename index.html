@@ -43,22 +43,22 @@ tbody tr:nth-child(even) { background:#F9FAFB; }
 </head><body>
 <header>
   <h1>株式会社 永代運輸倉庫　経営ダッシュボード【当期】</h1>
-  <p>対象期間: 2025年7月〜2026年6月　／　データ基準日: 自社売上 2026/06/19　利用貨物・傭車費・燃料費 2026/04　／　最終更新: 2026/06/19　／　単位: 千円</p>
+  <p>対象期間: 2025年7月〜2026年6月　／　データ基準日: 自社売上 2026/06/26　利用貨物・傭車費・燃料費 2026/04　／　最終更新: 2026/06/26　／　単位: 千円</p>
 </header>
 <main>
 <div class="alert-banner">
   <div class="alert-icon">✅</div>
   <div class="alert-body">
-    <strong>自社運送の売上を最新化しました（INFOLOGIから 〜2026/06/19 を取得）。6月分を増分反映（売上明細14,148件）。</strong>
+    <strong>自社運送の売上を最新化しました（INFOLOGIから 〜2026/06/26 を取得）。6月分を増分反映（売上明細14,416件）。期末（6/30）直前の最新実績です。</strong>
     <small>※ 利用貨物の売上・傭車費・燃料費は前回取得（2026/04）時点の値です（運行問合せ画面の自動取得が今回不調のため）。月次推移グラフの5月・6月は自社売上のみが計上されています。自社運送の原価（人件費・車両費・保険料等）は未入力のため自社粗利は算出不可。</small>
   </div>
 </div>
 <div class="kpi-grid">
-  <div class="kpi-card kpi-fresh"><div class="label">自社運送 累計売上<span class="fresh-tag">最新</span></div><div class="value">235,348</div><div class="sub">純運賃ベース（〜6/19）</div></div>
+  <div class="kpi-card kpi-fresh"><div class="label">自社運送 累計売上<span class="fresh-tag">最新</span></div><div class="value">240,021</div><div class="sub">純運賃ベース（〜6/26）</div></div>
   <div class="kpi-card"><div class="label">利用貨物 累計売上</div><div class="value">180,691</div><div class="sub">運行ベース（〜4月）</div></div>
   <div class="kpi-card"><div class="label">利用貨物 粗利</div><div class="value">10,017</div><div class="sub">粗利率 5.5%</div></div>
   <div class="kpi-card kpi-incomplete"><div class="label">自社運送 粗利<span class="incomplete-tag">暫定</span></div><div class="value">算出不可</div><div class="sub">原価データ未入力</div></div>
-  <div class="kpi-card"><div class="label">全社 累計売上</div><div class="value">416,039</div><div class="sub">自社+利用（運行ベース）</div></div>
+  <div class="kpi-card"><div class="label">全社 累計売上</div><div class="value">420,712</div><div class="sub">自社+利用（運行ベース）</div></div>
   <div class="kpi-card"><div class="label">燃料費 累計（税抜）</div><div class="value">29,265</div><div class="sub">軽油 + アドブルー（〜4月）</div></div>
 </div>
 <div class="tabs" id="tabs">
@@ -81,7 +81,7 @@ tbody tr:nth-child(even) { background:#F9FAFB; }
   <div class="section">
     <h2>自社運送 月次売上</h2>
     <div class="chart-box"><div class="chart-scroll"><canvas id="ch_jisha"></canvas></div></div>
-    <p class="note">※ 純運賃ベース（通行料・その他金額を除く）／ INFOLOGI 〜2026/06/19 取得</p>
+    <p class="note">※ 純運賃ベース（通行料・その他金額を除く）／ INFOLOGI 〜2026/06/26 取得</p>
   </div>
 </div>
 <div class="tabpanel">
@@ -118,15 +118,15 @@ tbody tr:nth-child(even) { background:#F9FAFB; }
 </main>
 <script>
 const MONTHS = ["7月","8月","9月","10月","11月","12月","1月","2月","3月","4月","5月","6月"];
-const jisha_sales = [20606, 17639, 20164, 21217, 19637, 21385, 18639, 19188, 22668, 22080, 20321, 11804];
+const jisha_sales = [20606, 17639, 20164, 21217, 19637, 21385, 18639, 19188, 22668, 22080, 20321, 16477];
 const riyo_sales  = [22202, 17807, 21072, 20430, 18108, 16556, 17725, 18717, 20800, 7274, 0, 0];
 const riyo_cost   = [20984, 16814, 19930, 19159, 17092, 15664, 16749, 17580, 19949, 6753, 0, 0];
 const riyo_gross  = [1218, 993, 1142, 1271, 1016, 892, 976, 1137, 851, 521, 0, 0];
 const cost_nenryo = [3147, 2869, 2993, 3353, 3024, 3234, 2875, 2789, 3563, 1418, 0, 0];
-const total_sales = [42808, 35446, 41236, 41647, 37745, 37941, 36364, 37905, 43468, 29354, 20321, 11804];
-const KD = {"kyotens": ["本社", "滋賀", "氷上"], "sales": {"本社": [19678, 15397, 18028, 18515, 16996, 17648, 15945, 16164, 18453, 18226, 16456, 8999], "滋賀": [928, 2241, 2136, 2702, 2641, 3131, 2694, 3024, 3609, 3249, 3259, 2805], "氷上": [0, 0, 0, 0, 0, 606, 0, 0, 606, 0, 0, 0]}, "totals": {"本社": 200507, "滋賀": 32417, "氷上": 1212}};
-const TOP_VEHICLES = [{"cd": "0729", "name": "京都　130　う　729", "amt": 17302}, {"cd": "358", "name": "京都131を　358", "amt": 17001}, {"cd": "2955", "name": "京都130い　2955", "amt": 15815}, {"cd": "888", "name": "京都108け　888", "amt": 14752}, {"cd": "629", "name": "京都130い　629", "amt": 13698}, {"cd": "0777", "name": "京都113う　777", "amt": 13443}, {"cd": "297", "name": "京都130　あ　297", "amt": 13140}, {"cd": "0929", "name": "京都130え　929", "amt": 12145}, {"cd": "2627", "name": "京都130あ　2627", "amt": 12073}, {"cd": "1729", "name": "京都130あ　1729", "amt": 11326}];
-const TOP_CUSTOMERS = [{"cd": "0604", "name": "阪神センコー西脇（本社）一般", "amt": 44008}, {"cd": "0430", "name": "新生物流", "amt": 29075}, {"cd": "0425", "name": "伏見運送", "amt": 25020}, {"cd": "0603", "name": "阪神センコー西脇（氷上）", "amt": 21557}, {"cd": "0418", "name": "ジャパントラフィック", "amt": 21477}, {"cd": "0449", "name": "センコー京都長岡（ウエルシア）", "amt": 20405}, {"cd": "0168", "name": "三協段ボール", "amt": 16888}, {"cd": "0064", "name": "センコー　栗東営業所", "amt": 16080}, {"cd": "0460", "name": "JPF", "amt": 15875}, {"cd": "0454", "name": "北信運輸", "amt": 15589}, {"cd": "0220", "name": "南大阪センコー運輸整備", "amt": 15175}, {"cd": "0053", "name": "ｼﾞｪｰﾌﾟﾚｯｸｽ", "amt": 14799}, {"cd": "0005", "name": "ダンフォス", "amt": 13140}, {"cd": "0066", "name": "センコー　守山営業所", "amt": 12196}, {"cd": "0063", "name": "センコー京都長岡（初田）", "amt": 10938}];
+const total_sales = [42808, 35446, 41236, 41647, 37745, 37941, 36364, 37905, 43468, 29354, 20321, 16477];
+const KD = {"kyotens": ["本社", "滋賀", "氷上"], "sales": {"本社": [19678, 15397, 18028, 18515, 16996, 17648, 15945, 16164, 18453, 18226, 16456, 12755], "滋賀": [928, 2241, 2136, 2702, 2641, 3131, 2694, 3024, 3609, 3249, 3259, 3722], "氷上": [0, 0, 0, 0, 0, 606, 0, 0, 606, 0, 0, 0]}, "totals": {"本社": 204263, "滋賀": 33334, "氷上": 1212}};
+const TOP_VEHICLES = [{"cd": "0729", "name": "京都　130　う　729", "amt": 17733}, {"cd": "358", "name": "京都131を　358", "amt": 17371}, {"cd": "2955", "name": "京都130い　2955", "amt": 16165}, {"cd": "888", "name": "京都108け　888", "amt": 15001}, {"cd": "629", "name": "京都130い　629", "amt": 14070}, {"cd": "297", "name": "京都130　あ　297", "amt": 13680}, {"cd": "0777", "name": "京都113う　777", "amt": 13647}, {"cd": "0929", "name": "京都130え　929", "amt": 12486}, {"cd": "2627", "name": "京都130あ　2627", "amt": 12257}, {"cd": "1729", "name": "京都130あ　1729", "amt": 11566}];
+const TOP_CUSTOMERS = [{"cd": "0604", "name": "阪神センコー西脇（本社）一般", "amt": 44764}, {"cd": "0430", "name": "新生物流", "amt": 29804}, {"cd": "0425", "name": "伏見運送", "amt": 25921}, {"cd": "0418", "name": "ジャパントラフィック", "amt": 21982}, {"cd": "0603", "name": "阪神センコー西脇（氷上）", "amt": 21557}, {"cd": "0449", "name": "センコー京都長岡（ウエルシア）", "amt": 20645}, {"cd": "0168", "name": "三協段ボール", "amt": 16888}, {"cd": "0460", "name": "JPF", "amt": 16225}, {"cd": "0064", "name": "センコー　栗東営業所", "amt": 16112}, {"cd": "0220", "name": "南大阪センコー運輸整備", "amt": 15727}, {"cd": "0454", "name": "北信運輸", "amt": 15711}, {"cd": "0053", "name": "ｼﾞｪｰﾌﾟﾚｯｸｽ", "amt": 14858}, {"cd": "0005", "name": "ダンフォス", "amt": 13680}, {"cd": "0066", "name": "センコー　守山営業所", "amt": 12538}, {"cd": "0063", "name": "センコー京都長岡（初田）", "amt": 11396}];
 const FUEL_TOP = [{"cd": "0777", "name": "京都113う　777", "kubun": "自社", "kyoten": "本社", "amt": 2527}, {"cd": "358", "name": "京都131を　358", "kubun": "自社", "kyoten": "本社", "amt": 2447}, {"cd": "888", "name": "京都108け　888", "kubun": "自社", "kyoten": "本社", "amt": 2345}, {"cd": "2955", "name": "京都130い　2955", "kubun": "自社", "kyoten": "本社", "amt": 2228}, {"cd": "629", "name": "京都130い　629", "kubun": "自社", "kyoten": "本社", "amt": 2038}, {"cd": "0729", "name": "京都　130　う　729", "kubun": "自社", "kyoten": "本社", "amt": 1960}, {"cd": "2627", "name": "京都130あ　2627", "kubun": "自社", "kyoten": "本社", "amt": 1707}, {"cd": "0129", "name": "滋賀130う　129", "kubun": "自社", "kyoten": "滋賀", "amt": 1467}, {"cd": "0829", "name": "京都130い　829", "kubun": "自社", "kyoten": "本社", "amt": 1433}, {"cd": "2944", "name": "京都130う　2944", "kubun": "自社", "kyoten": "本社", "amt": 1356}, {"cd": "297", "name": "京都130　あ　297", "kubun": "自社", "kyoten": "本社", "amt": 1259}, {"cd": "2951", "name": "京都131う　2951", "kubun": "自社", "kyoten": "本社", "amt": 1131}, {"cd": "0929", "name": "京都130え　929", "kubun": "自社", "kyoten": "本社", "amt": 1021}, {"cd": "4640", "name": "滋賀100い　4640", "kubun": "自社", "kyoten": "滋賀", "amt": 772}, {"cd": "9", "name": "京都138か　9", "kubun": "自社", "kyoten": "本社", "amt": 756}, {"cd": "1729", "name": "京都130あ　1729", "kubun": "自社", "kyoten": "本社", "amt": 727}, {"cd": "2758", "name": "滋賀100き　2758", "kubun": "自社", "kyoten": "滋賀", "amt": 689}, {"cd": "01", "name": "京都130　う　1", "kubun": "自社", "kyoten": "本社", "amt": 578}, {"cd": "2760", "name": "滋賀100き　2760", "kubun": "自社", "kyoten": "滋賀", "amt": 543}, {"cd": "229", "name": "京都130い　229", "kubun": "自社", "kyoten": "本社", "amt": 443}];
 const fmt = n => (n==null) ? '—' : n.toLocaleString();
 const tbody = id => document.getElementById(id);
@@ -140,6 +140,4 @@ function chartJisha(){new Chart(document.getElementById('ch_jisha'),{data:{label
 function chartRiyo(){new Chart(document.getElementById('ch_riyo'),{data:{labels:MONTHS,datasets:[{type:'bar',label:'売上',data:riyo_sales,backgroundColor:'rgba(255,158,38,0.85)',yAxisID:'y'},{type:'bar',label:'傭車費',data:riyo_cost,backgroundColor:'rgba(192,86,33,0.7)',yAxisID:'y'},{type:'line',label:'粗利',data:riyo_gross,borderColor:'#28a745',pointBackgroundColor:'#28a745',yAxisID:'y2',tension:0.3}]},options:{maintainAspectRatio:false,responsive:true,scales:{y:{position:'left'},y2:{position:'right',grid:{drawOnChartArea:false}}}}});}
 function chartKyoten(){const ds=KD.kyotens.map((ky,i)=>({type:'bar',label:ky,data:KD.sales[ky],stack:'s',backgroundColor:['rgba(26,58,92,0.85)','rgba(108,158,200,0.85)','rgba(180,200,220,0.85)'][i]}));new Chart(document.getElementById('ch_kyoten'),{data:{labels:MONTHS,datasets:ds},options:{maintainAspectRatio:false,responsive:true,scales:{x:{stacked:true},y:{stacked:true}}}});}
 function chartFuel(){new Chart(document.getElementById('ch_fuel'),{data:{labels:MONTHS,datasets:[{type:'bar',label:'燃料費',data:cost_nenryo,backgroundColor:'rgba(220,53,69,0.75)'}]},options:{maintainAspectRatio:false,responsive:true}});}
-document.addEventListener('DOMContentLoaded',()=>{fillTotal();fillRiyo();fillKyoten();fillFuel();fillRank();chartTotal();chartJisha();chartRiyo();chartKyoten();chartFuel();const tabs=document.querySelectorAll('.tab');const panels=document.querySelectorAll('.tabpanel');tabs.forEach((t,idx)=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));panels.forEach(x=>x.classList.remove('active'));t.classList.add('active');panels[idx].classList.add('active');}));});
-</script>
-</body></html>
+document.addEventListener('DOMContentLoaded',()=>{fillTotal();fillRiyo();fillKyoten();fillFuel();fillRank();chartTotal();chartJisha();chartRiyo();chartKyoten();chartFuel();const tabs=document.querySelectorAll('.tab');const panels=document.querySelectorAll('.tabpanel');tabs.forEach((t,idx)=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));panels.forEach(x=>x.classList.remove('active'));t.classList.add('active');panels[idx].classList
