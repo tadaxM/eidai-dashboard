@@ -1,2 +1,3 @@
 # eidai-dashboard
-Eidai Transport Dashboard (GitHub Pages)
+
+永代運輸倉庫 車両別売上ダッシュボード（公開版・車番のみ）。火・土 7:00 に自動更新。生成元: obsidian/01_Clients/永代運輸倉庫/scripts/dashboard_sharyou.py → dashboard_deploy.py

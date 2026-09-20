@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>株式会社 永代運輸倉庫 経営ダッシュボード【当期】</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+* { box-sizing: border-box; }
+body { margin:0; font-family: -apple-system,BlinkMacSystemFont,'Segoe UI','Hiragino Kaku Gothic ProN',Meiryo,sans-serif; background:#F4F6F9; color:#222; }
+header { background:#1A3A5C; color:white; padding:20px 28px; }
+header h1 { margin:0; font-size:22px; }
+header p { margin:4px 0 0; opacity:0.85; font-size:13px; }
+main { max-width:1320px; margin:0 auto; padding:18px; }
+.alert-banner { background:#FFF3CD; border-left:5px solid #FFC107; padding:14px 18px; margin:14px 0; border-radius:6px; display:flex; gap:12px; align-items:flex-start; }
+.alert-icon { font-size:22px; }
+.alert-body strong { display:block; color:#856404; margin-bottom:4px; }
+.alert-body small { color:#7a6a30; }
+.kpi-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin:14px 0; }
+.kpi-card { background:white; padding:14px 16px; border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.08); border-left:4px solid #1A3A5C; }
+.kpi-incomplete { border-left-color:#FFC107; }
+.kpi-fresh { border-left-color:#28a745; }
+.kpi-card .label { color:#6B7280; font-size:12px; }
+.kpi-card .value { font-size:22px; font-weight:700; color:#1A3A5C; margin-top:4px; }
+.kpi-card .sub  { font-size:11px; color:#888; margin-top:3px; }
+.incomplete-tag { display:inline-block; background:#FFC107; color:#333; padding:2px 7px; border-radius:10px; font-size:10px; margin-left:6px; }
+.fresh-tag { display:inline-block; background:#28a745; color:white; padding:2px 7px; border-radius:10px; font-size:10px; margin-left:6px; }
+.section { background:white; border-radius:10px; padding:16px 18px; margin:14px 0; box-shadow:0 1px 3px rgba(0,0,0,0.06); }
+.section h2 { margin:0 0 10px; font-size:16px; color:#1A3A5C; border-left:4px solid #1A3A5C; padding-left:10px; }
+.chart-box { background:#f8f9fa; border:1px solid #e0e0e0; border-radius:8px; padding:16px; margin-bottom:12px; overflow-x:auto; }
+.chart-scroll { position:relative; height:280px; min-width:520px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th,td { border-bottom:1px solid #E5E7EB; padding:7px 10px; text-align:right; }
+th:first-child, td:first-child { text-align:left; }
+thead th { background:#1A3A5C; color:white; font-weight:600; }
+tbody tr:nth-child(even) { background:#F9FAFB; }
+.tabs { display:flex; gap:4px; border-bottom:2px solid #E5E7EB; margin-bottom:12px; flex-wrap: wrap; }
+.tab { padding:8px 16px; cursor:pointer; border-bottom:3px solid transparent; font-size:13px; color:#6B7280; user-select:none; }
+.tab.active { color:#1A3A5C; border-bottom-color:#1A3A5C; font-weight:600; }
+.tabpanel { display:none; }
+.tabpanel.active { display:block; }
+.note { font-size:11px; color:#666; margin-top:8px; }
+</style>
+</head><body>
+<header>
+  <h1>株式会社 永代運輸倉庫　経営ダッシュボード【当期】</h1>
+  <p>対象期間: 2025年7月〜2026年6月　／　データ基準日: 自社売上 2026/06/26　利用貨物・傭車費・燃料費 2026/04　／　最終更新: 2026/06/26　／　単位: 千円</p>
+</header>
+<main>
+<div class="alert-banner">
+  <div class="alert-icon">✅</div>
+  <div class="alert-body">
+    <strong>自社運送の売上を最新化しました（INFOLOGIから 〜2026/06/26 を取得）。6月分を増分反映（売上明細14,416件）。期末（6/30）直前の最新実績です。</strong>
+    <small>※ 利用貨物の売上・傭車費・燃料費は前回取得（2026/04）時点の値です（運行問合せ画面の自動取得が今回不調のため）。月次推移グラフの5月・6月は自社売上のみが計上されています。自社運送の原価（人件費・車両費・保険料等）は未入力のため自社粗利は算出不可。</small>
+  </div>
+</div>
+<div class="kpi-grid">
+  <div class="kpi-card kpi-fresh"><div class="label">自社運送 累計売上<span class="fresh-tag">最新</span></div><div class="value">240,021</div><div class="sub">純運賃ベース（〜6/26）</div></div>
+  <div class="kpi-card"><div class="label">利用貨物 累計売上</div><div class="value">180,691</div><div class="sub">運行ベース（〜4月）</div></div>
+  <div class="kpi-card"><div class="label">利用貨物 粗利</div><div class="value">10,017</div><div class="sub">粗利率 5.5%</div></div>
+  <div class="kpi-card kpi-incomplete"><div class="label">自社運送 粗利<span class="incomplete-tag">暫定</span></div><div class="value">算出不可</div><div class="sub">原価データ未入力</div></div>
+  <div class="kpi-card"><div class="label">全社 累計売上</div><div class="value">420,712</div><div class="sub">自社+利用（運行ベース）</div></div>
+  <div class="kpi-card"><div class="label">燃料費 累計（税抜）</div><div class="value">29,265</div><div class="sub">軽油 + アドブルー（〜4月）</div></div>
+</div>
+<div class="tabs" id="tabs">
+  <div class="tab active" data-i="0">月次推移</div>
+  <div class="tab" data-i="1">自社運送</div>
+  <div class="tab" data-i="2">利用貨物</div>
+  <div class="tab" data-i="3">拠点別</div>
+  <div class="tab" data-i="4">燃料費</div>
+  <div class="tab" data-i="5">ランキング</div>
+</div>
+<div class="tabpanel active">
+  <div class="section">
+    <h2>月次売上推移（自社 / 利用 積み上げ）</h2>
+    <div class="chart-box"><div class="chart-scroll"><canvas id="ch_total"></canvas></div></div>
+    <table><thead><tr><th>月</th><th>自社売上</th><th>利用売上</th><th>合計</th><th>燃料費</th></tr></thead><tbody id="tbl_total"></tbody></table>
+    <p class="note">※ 5月・6月の利用売上は未取得（前回4月時点）。合計は自社売上のみを反映。</p>
+  </div>
+</div>
+<div class="tabpanel">
+  <div class="section">
+    <h2>自社運送 月次売上</h2>
+    <div class="chart-box"><div class="chart-scroll"><canvas id="ch_jisha"></canvas></div></div>
+    <p class="note">※ 純運賃ベース（通行料・その他金額を除く）／ INFOLOGI 〜2026/06/26 取得</p>
+  </div>
+</div>
+<div class="tabpanel">
+  <div class="section">
+    <h2>利用貨物 月次売上 / 傭車費 / 粗利</h2>
+    <div class="chart-box"><div class="chart-scroll"><canvas id="ch_riyo"></canvas></div></div>
+    <table><thead><tr><th>月</th><th>売上</th><th>傭車費</th><th>粗利</th><th>粗利率</th></tr></thead><tbody id="tbl_riyo"></tbody></table>
+    <p class="note">※ 運行問合せ由来（傭車金額>0）。前回取得（2026/04）時点。5月・6月は未反映。</p>
+  </div>
+</div>
+<div class="tabpanel">
+  <div class="section">
+    <h2>拠点別 月次売上（自社運送）</h2>
+    <div class="chart-box"><div class="chart-scroll"><canvas id="ch_kyoten"></canvas></div></div>
+    <table><thead><tr><th>拠点</th><th>累計売上</th><th>構成比</th></tr></thead><tbody id="tbl_kyoten"></tbody></table>
+  </div>
+</div>
+<div class="tabpanel">
+  <div class="section">
+    <h2>燃料費 月次推移（軽油 + アドブルー、税抜）</h2>
+    <div class="chart-box"><div class="chart-scroll"><canvas id="ch_fuel"></canvas></div></div>
+    <h2 style="margin-top:18px">車両別 燃料費 TOP20</h2>
+    <table><thead><tr><th>車両CD</th><th>車両名</th><th>区分</th><th>拠点</th><th>燃料費（千円）</th></tr></thead><tbody id="tbl_fuel"></tbody></table>
+  </div>
+</div>
+<div class="tabpanel">
+  <div class="section">
+    <h2>自社車両別 売上 TOP10</h2>
+    <table><thead><tr><th>順位</th><th>車両CD</th><th>車両名</th><th>累計売上（千円）</th></tr></thead><tbody id="tbl_v"></tbody></table>
+    <h2 style="margin-top:18px">得意先別 売上 TOP15</h2>
+    <table><thead><tr><th>順位</th><th>得意先CD</th><th>得意先名</th><th>累計売上（千円）</th></tr></thead><tbody id="tbl_c"></tbody></table>
+  </div>
+</div>
+</main>
+<script>
+const MONTHS = ["7月","8月","9月","10月","11月","12月","1月","2月","3月","4月","5月","6月"];
+const jisha_sales = [20606, 17639, 20164, 21217, 19637, 21385, 18639, 19188, 22668, 22080, 20321, 16477];
+const riyo_sales  = [22202, 17807, 21072, 20430, 18108, 16556, 17725, 18717, 20800, 7274, 0, 0];
+const riyo_cost   = [20984, 16814, 19930, 19159, 17092, 15664, 16749, 17580, 19949, 6753, 0, 0];
+const riyo_gross  = [1218, 993, 1142, 1271, 1016, 892, 976, 1137, 851, 521, 0, 0];
+const cost_nenryo = [3147, 2869, 2993, 3353, 3024, 3234, 2875, 2789, 3563, 1418, 0, 0];
+const total_sales = [42808, 35446, 41236, 41647, 37745, 37941, 36364, 37905, 43468, 29354, 20321, 16477];
+const KD = {"kyotens": ["本社", "滋賀", "氷上"], "sales": {"本社": [19678, 15397, 18028, 18515, 16996, 17648, 15945, 16164, 18453, 18226, 16456, 12755], "滋賀": [928, 2241, 2136, 2702, 2641, 3131, 2694, 3024, 3609, 3249, 3259, 3722], "氷上": [0, 0, 0, 0, 0, 606, 0, 0, 606, 0, 0, 0]}, "totals": {"本社": 204263, "滋賀": 33334, "氷上": 1212}};
+const TOP_VEHICLES = [{"cd": "0729", "name": "京都　130　う　729", "amt": 17733}, {"cd": "358", "name": "京都131を　358", "amt": 17371}, {"cd": "2955", "name": "京都130い　2955", "amt": 16165}, {"cd": "888", "name": "京都108け　888", "amt": 15001}, {"cd": "629", "name": "京都130い　629", "amt": 14070}, {"cd": "297", "name": "京都130　あ　297", "amt": 13680}, {"cd": "0777", "name": "京都113う　777", "amt": 13647}, {"cd": "0929", "name": "京都130え　929", "amt": 12486}, {"cd": "2627", "name": "京都130あ　2627", "amt": 12257}, {"cd": "1729", "name": "京都130あ　1729", "amt": 11566}];
+const TOP_CUSTOMERS = [{"cd": "0604", "name": "阪神センコー西脇（本社）一般", "amt": 44764}, {"cd": "0430", "name": "新生物流", "amt": 29804}, {"cd": "0425", "name": "伏見運送", "amt": 25921}, {"cd": "0418", "name": "ジャパントラフィック", "amt": 21982}, {"cd": "0603", "name": "阪神センコー西脇（氷上）", "amt": 21557}, {"cd": "0449", "name": "センコー京都長岡（ウエルシア）", "amt": 20645}, {"cd": "0168", "name": "三協段ボール", "amt": 16888}, {"cd": "0460", "name": "JPF", "amt": 16225}, {"cd": "0064", "name": "センコー　栗東営業所", "amt": 16112}, {"cd": "0220", "name": "南大阪センコー運輸整備", "amt": 15727}, {"cd": "0454", "name": "北信運輸", "amt": 15711}, {"cd": "0053", "name": "ｼﾞｪｰﾌﾟﾚｯｸｽ", "amt": 14858}, {"cd": "0005", "name": "ダンフォス", "amt": 13680}, {"cd": "0066", "name": "センコー　守山営業所", "amt": 12538}, {"cd": "0063", "name": "センコー京都長岡（初田）", "amt": 11396}];
+const FUEL_TOP = [{"cd": "0777", "name": "京都113う　777", "kubun": "自社", "kyoten": "本社", "amt": 2527}, {"cd": "358", "name": "京都131を　358", "kubun": "自社", "kyoten": "本社", "amt": 2447}, {"cd": "888", "name": "京都108け　888", "kubun": "自社", "kyoten": "本社", "amt": 2345}, {"cd": "2955", "name": "京都130い　2955", "kubun": "自社", "kyoten": "本社", "amt": 2228}, {"cd": "629", "name": "京都130い　629", "kubun": "自社", "kyoten": "本社", "amt": 2038}, {"cd": "0729", "name": "京都　130　う　729", "kubun": "自社", "kyoten": "本社", "amt": 1960}, {"cd": "2627", "name": "京都130あ　2627", "kubun": "自社", "kyoten": "本社", "amt": 1707}, {"cd": "0129", "name": "滋賀130う　129", "kubun": "自社", "kyoten": "滋賀", "amt": 1467}, {"cd": "0829", "name": "京都130い　829", "kubun": "自社", "kyoten": "本社", "amt": 1433}, {"cd": "2944", "name": "京都130う　2944", "kubun": "自社", "kyoten": "本社", "amt": 1356}, {"cd": "297", "name": "京都130　あ　297", "kubun": "自社", "kyoten": "本社", "amt": 1259}, {"cd": "2951", "name": "京都131う　2951", "kubun": "自社", "kyoten": "本社", "amt": 1131}, {"cd": "0929", "name": "京都130え　929", "kubun": "自社", "kyoten": "本社", "amt": 1021}, {"cd": "4640", "name": "滋賀100い　4640", "kubun": "自社", "kyoten": "滋賀", "amt": 772}, {"cd": "9", "name": "京都138か　9", "kubun": "自社", "kyoten": "本社", "amt": 756}, {"cd": "1729", "name": "京都130あ　1729", "kubun": "自社", "kyoten": "本社", "amt": 727}, {"cd": "2758", "name": "滋賀100き　2758", "kubun": "自社", "kyoten": "滋賀", "amt": 689}, {"cd": "01", "name": "京都130　う　1", "kubun": "自社", "kyoten": "本社", "amt": 578}, {"cd": "2760", "name": "滋賀100き　2760", "kubun": "自社", "kyoten": "滋賀", "amt": 543}, {"cd": "229", "name": "京都130い　229", "kubun": "自社", "kyoten": "本社", "amt": 443}];
+const fmt = n => (n==null) ? '—' : n.toLocaleString();
+const tbody = id => document.getElementById(id);
+function fillTotal(){let h='';for(let i=0;i<12;i++){h+=`<tr><td>${MONTHS[i]}</td><td>${fmt(jisha_sales[i])}</td><td>${fmt(riyo_sales[i])}</td><td>${fmt(total_sales[i])}</td><td>${fmt(cost_nenryo[i])}</td></tr>`;}tbody('tbl_total').innerHTML=h;}
+function fillRiyo(){let h='';for(let i=0;i<12;i++){const rate=riyo_sales[i]?((riyo_gross[i]/riyo_sales[i]*100).toFixed(1)+'%'):'—';h+=`<tr><td>${MONTHS[i]}</td><td>${fmt(riyo_sales[i])}</td><td>${fmt(riyo_cost[i])}</td><td>${fmt(riyo_gross[i])}</td><td>${rate}</td></tr>`;}tbody('tbl_riyo').innerHTML=h;}
+function fillKyoten(){const tot=Object.values(KD.totals).reduce((a,b)=>a+b,0);let h='';for(const ky of KD.kyotens){const v=KD.totals[ky]||0;const r=tot?(v/tot*100).toFixed(1)+'%':'—';h+=`<tr><td>${ky}</td><td>${fmt(v)}</td><td>${r}</td></tr>`;}h+=`<tr><td><b>計</b></td><td><b>${fmt(tot)}</b></td><td><b>100%</b></td></tr>`;tbody('tbl_kyoten').innerHTML=h;}
+function fillFuel(){let h='';for(const v of FUEL_TOP){h+=`<tr><td>${v.cd}</td><td>${v.name}</td><td>${v.kubun}</td><td>${v.kyoten}</td><td>${fmt(v.amt)}</td></tr>`;}tbody('tbl_fuel').innerHTML=h;}
+function fillRank(){let h='';TOP_VEHICLES.forEach((v,i)=>h+=`<tr><td>${i+1}</td><td>${v.cd}</td><td>${v.name}</td><td>${fmt(v.amt)}</td></tr>`);tbody('tbl_v').innerHTML=h;let h2='';TOP_CUSTOMERS.forEach((c,i)=>h2+=`<tr><td>${i+1}</td><td>${c.cd}</td><td>${c.name}</td><td>${fmt(c.amt)}</td></tr>`);tbody('tbl_c').innerHTML=h2;}
+function chartTotal(){new Chart(document.getElementById('ch_total'),{data:{labels:MONTHS,datasets:[{type:'bar',label:'自社',data:jisha_sales,backgroundColor:'rgba(26,58,92,0.85)',stack:'s'},{type:'bar',label:'利用',data:riyo_sales,backgroundColor:'rgba(255,158,38,0.85)',stack:'s'}]},options:{maintainAspectRatio:false,responsive:true,scales:{x:{stacked:true},y:{stacked:true}}}});}
+function chartJisha(){new Chart(document.getElementById('ch_jisha'),{data:{labels:MONTHS,datasets:[{type:'bar',label:'自社売上',data:jisha_sales,backgroundColor:'rgba(26,58,92,0.85)'}]},options:{maintainAspectRatio:false,responsive:true}});}
+function chartRiyo(){new Chart(document.getElementById('ch_riyo'),{data:{labels:MONTHS,datasets:[{type:'bar',label:'売上',data:riyo_sales,backgroundColor:'rgba(255,158,38,0.85)',yAxisID:'y'},{type:'bar',label:'傭車費',data:riyo_cost,backgroundColor:'rgba(192,86,33,0.7)',yAxisID:'y'},{type:'line',label:'粗利',data:riyo_gross,borderColor:'#28a745',pointBackgroundColor:'#28a745',yAxisID:'y2',tension:0.3}]},options:{maintainAspectRatio:false,responsive:true,scales:{y:{position:'left'},y2:{position:'right',grid:{drawOnChartArea:false}}}}});}
+function chartKyoten(){const ds=KD.kyotens.map((ky,i)=>({type:'bar',label:ky,data:KD.sales[ky],stack:'s',backgroundColor:['rgba(26,58,92,0.85)','rgba(108,158,200,0.85)','rgba(180,200,220,0.85)'][i]}));new Chart(document.getElementById('ch_kyoten'),{data:{labels:MONTHS,datasets:ds},options:{maintainAspectRatio:false,responsive:true,scales:{x:{stacked:true},y:{stacked:true}}}});}
+function chartFuel(){new Chart(document.getElementById('ch_fuel'),{data:{labels:MONTHS,datasets:[{type:'bar',label:'燃料費',data:cost_nenryo,backgroundColor:'rgba(220,53,69,0.75)'}]},options:{maintainAspectRatio:false,responsive:true}});}
+document.addEventListener('DOMContentLoaded',()=>{fillTotal();fillRiyo();fillKyoten();fillFuel();fillRank();chartTotal();chartJisha();chartRiyo();chartKyoten();chartFuel();const tabs=document.querySelectorAll('.tab');const panels=document.querySelectorAll('.tabpanel');tabs.forEach((t,idx)=>t.addEventListener('click',()=>{tabs.forEach(x=>x.classList.remove('active'));panels.forEach(x=>x.classList.remove('active'));t.classList.add('active');panels[idx].classList
