@@ -1,0 +1,13 @@
+{
+    "run_at":  "2026-09-20 17:34",
+    "date":  "2026-09-20",
+    "dl":  "OK（16:42 手動DL）",
+    "generate":  "OK",
+    "pages":  "OK",
+    "mail":  "OK",
+    "all_ok":  true,
+    "problems":  [
+
+                 ],
+    "note":  "永代運輸 車両別売上ダッシュボード 自動配信の直近実行結果。all_ok=true かつ date が当日なら正常。"
+}
