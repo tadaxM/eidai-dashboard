@@ -1,10 +1,11 @@
 {
-    "run_at":  "2026-10-03 08:05",
-    "date":  "2026-10-03",
-    "dl":  "OK（5/5件）",
+    "run_at":  "2026-10-06 02:01",
+    "date":  "2026-10-06",
+    "dl":  "OK（4/4件）",
     "generate":  "OK",
     "pages":  "OK",
     "mail":  "OK",
+    "line":  "OK",
     "all_ok":  true,
     "problems":  [
 
