@@ -1,10 +1,10 @@
 {
-    "run_at":  "2026-10-13 17:41",
-    "date":  "2026-10-13",
+    "run_at":  "2026-10-14 02:00",
+    "date":  "2026-10-14",
     "dl":  "OK（2/2件）",
     "generate":  "OK",
     "pages":  "OK",
-    "mail":  "OK",
+    "mail":  "SKIP（配信日外）",
     "line":  "OK",
     "all_ok":  true,
     "problems":  [
