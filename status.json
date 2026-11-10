@@ -1,14 +1,14 @@
 {
-    "run_at":  "2026-11-10 06:40",
-    "date":  "2026-11-10",
-    "dl":  "OK（4/4件）",
+    "run_at":  "2026-11-11 02:05",
+    "date":  "2026-11-11",
+    "dl":  "NG（exit 1・成功ログなし。前回取得分で作成）",
     "generate":  "OK",
     "pages":  "OK",
-    "mail":  "OK",
-    "line":  "OK",
-    "all_ok":  true,
+    "mail":  "SKIP（配信日外）",
+    "line":  "SKIP（問題あり・未送信）",
+    "all_ok":  false,
     "problems":  [
-
+                     "データ取得: NG（exit 1・成功ログなし。前回取得分で作成）"
                  ],
     "note":  "永代運輸 車両別売上ダッシュボード 自動配信の直近実行結果。all_ok=true かつ date が当日なら正常。"
 }
